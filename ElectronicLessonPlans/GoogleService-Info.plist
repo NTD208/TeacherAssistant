@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1006428989003-ee3aj85pfca64jfbeubu8de766hnouh3.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1006428989003-ee3aj85pfca64jfbeubu8de766hnouh3</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDMUPU_NWXM2tQEZqjiej7DcAbvbsTeD1w</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1006428989003</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>chudu.ElectronicLessonPlans</string>
+	<key>PROJECT_ID</key>
+	<string>teacherassistant-6103a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>teacherassistant-6103a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1006428989003:ios:db86bbf7d6f5c1dd50cfce</string>
+	<key>DATABASE_URL</key>
+	<string>https://teacherassistant-6103a-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>

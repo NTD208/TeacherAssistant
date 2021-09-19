@@ -1,0 +1,6 @@
+framework module Pods_ElectronicLessonPlans {
+  umbrella header "Pods-ElectronicLessonPlans-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,422 @@
+//
+//  SignUpViewController.swift
+//  ElectronicLessonPlans
+//
+//  Created by Chu Du on 24/06/2021.
+//
+
+import UIKit
+import FirebaseAuth
+import FirebaseDatabase
+import ProgressHUD
+
+class SignUpViewController: UIViewController {
+    
+    private let database = Database.database().reference()
+    
+    let containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    let logoImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(named: "logo")
+        image.contentMode = .scaleAspectFit
+        return image
+    }()
+    
+    let nameTextField: UITextField = {
+        let tf = UITextField()
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.placeholder = "Họ và tên"
+//        textField.keyboardType = .numberPad
+        tf.borderStyle = .none
+        tf.font = UIFont.systemFont(ofSize: 18)
+        return tf
+    }()
+    
+    let dobTextField: UITextField = {
+        let tf = UITextField()
+        tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.placeholder = "Ngày sinh"
+//        textField.keyboardType = .numberPad
+        tf.borderStyle = .none
+        tf.font = UIFont.systemFont(ofSize: 18)
+        return tf
+    }()
+    
+    let dobPicker: UIDatePicker = {
+        let datePicker = UIDatePicker()
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.datePickerMode = .date
+        return datePicker
+    }()
+    
+    let phoneTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Email"
+//        textField.keyboardType = .numberPad
+        textField.borderStyle = .none
+        textField.font = UIFont.systemFont(ofSize: 18)
+        return textField
+    }()
+    
+    let passwordTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Mật khẩu"
+        textField.isSecureTextEntry = true
+        textField.borderStyle = .none
+        textField.font = UIFont.systemFont(ofSize: 18)
+        return textField
+    }()
+    
+    let rePasswordTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Nhập lại mật khẩu"
+        textField.isSecureTextEntry = true
+        textField.borderStyle = .none
+        textField.font = UIFont.systemFont(ofSize: 18)
+        return textField
+    }()
+    
+    let signUpButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Đăng ký", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        button.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return button
+    }()
+    
+    let loginLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.attributedText = NSAttributedString(string: "Bạn đã có tài khoản? Đăng nhập.", attributes: [.underlineStyle: NSUnderlineStyle.single.rawValue])
+        label.textColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
+    let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.alignment = .fill
+        stack.axis = .vertical
+        stack.distribution = .fill
+        stack.backgroundColor = .clear
+        stack.spacing = 20
+        return stack
+    }()
+    
+    let nameView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    let dobView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    let phoneView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    let passwordView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    let rePasswordView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    let nameImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "textformat.alt")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return image
+    }()
+    
+    let dobImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "calendar")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return image
+    }()
+    
+    let phoneImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "envelope.fill")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return image
+    }()
+    
+    let passwordImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "lock.fill")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return image
+    }()
+    
+    let rePasswordImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(systemName: "lock.fill")
+        image.contentMode = .scaleAspectFit
+        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        return image
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.overrideUserInterfaceStyle = .light
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: view.bounds.width + 100, height: view.bounds.height + 100)
+        gradientLayer.colors = [#colorLiteral(red: 0.974270761, green: 0.9642215371, blue: 0.9773648381, alpha: 1).cgColor, #colorLiteral(red: 0.8661997318, green: 0.8461599946, blue: 0.8638817668, alpha: 1).cgColor]
+        gradientLayer.shouldRasterize = true
+        containerView.layer.addSublayer(gradientLayer)
+        
+        setupLayout()
+        
+        underlineTextField(subView: nameView)
+        underlineTextField(subView: dobView)
+        underlineTextField(subView: phoneView)
+        underlineTextField(subView: passwordView)
+        underlineTextField(subView: rePasswordView)
+                
+        loginLabel.isUserInteractionEnabled = true
+        let labelTapGesture = UITapGestureRecognizer(target: self, action: #selector(onPressLoginLabel))
+        loginLabel.addGestureRecognizer(labelTapGesture)
+        
+        signUpButton.addTarget(self, action: #selector(onPressSignUp), for: .touchUpInside)
+    }
+    
+    func setupLayout() {
+        self.view.addSubview(containerView)
+        containerView.addSubview(logoImage)
+        containerView.addSubview(stackView)
+        
+        stackView.addArrangedSubview(nameView)
+        stackView.addArrangedSubview(dobView)
+        stackView.addArrangedSubview(phoneView)
+        stackView.addArrangedSubview(passwordView)
+        stackView.addArrangedSubview(rePasswordView)
+        
+        nameView.addSubview(nameImage)
+        nameView.addSubview(nameTextField)
+        
+        dobView.addSubview(dobImage)
+        dobView.addSubview(dobTextField)
+        
+        phoneView.addSubview(phoneImage)
+        phoneView.addSubview(phoneTextField)
+        
+        passwordView.addSubview(passwordImage)
+        passwordView.addSubview(passwordTextField)
+        
+        rePasswordView.addSubview(rePasswordImage)
+        rePasswordView.addSubview(rePasswordTextField)
+        
+        containerView.addSubview(signUpButton)
+        containerView.addSubview(loginLabel)
+        
+        containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        containerView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        containerView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        
+        nameView.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        nameView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        dobView.heightAnchor.constraint(equalTo: nameView.heightAnchor).isActive = true
+        dobView.widthAnchor.constraint(equalTo: nameView.widthAnchor).isActive = true
+        phoneView.heightAnchor.constraint(equalTo: dobView.heightAnchor).isActive = true
+        phoneView.widthAnchor.constraint(equalTo: dobView.widthAnchor).isActive = true
+        passwordView.heightAnchor.constraint(equalTo: phoneView.heightAnchor).isActive = true
+        passwordView.widthAnchor.constraint(equalTo: phoneView.widthAnchor).isActive = true
+        rePasswordView.heightAnchor.constraint(equalTo: passwordView.heightAnchor).isActive = true
+        rePasswordView.widthAnchor.constraint(equalTo: passwordView.widthAnchor).isActive = true
+        
+        nameImage.topAnchor.constraint(equalTo: nameView.topAnchor).isActive = true
+        nameImage.bottomAnchor.constraint(equalTo: nameView.bottomAnchor).isActive = true
+        nameImage.leadingAnchor.constraint(equalTo: nameView.leadingAnchor).isActive = true
+        
+        nameTextField.topAnchor.constraint(equalTo: nameImage.topAnchor).isActive = true
+        nameTextField.bottomAnchor.constraint(equalTo: nameImage.bottomAnchor).isActive = true
+        nameTextField.trailingAnchor.constraint(equalTo: nameView.trailingAnchor).isActive = true
+        nameTextField.leadingAnchor.constraint(equalTo: nameImage.trailingAnchor, constant: 10).isActive = true
+        
+        dobImage.topAnchor.constraint(equalTo: dobView.topAnchor).isActive = true
+        dobImage.bottomAnchor.constraint(equalTo: dobView.bottomAnchor).isActive = true
+        dobImage.leadingAnchor.constraint(equalTo: dobView.leadingAnchor, constant: 0.001).isActive = true
+        
+        dobTextField.topAnchor.constraint(equalTo: dobImage.topAnchor).isActive = true
+        dobTextField.bottomAnchor.constraint(equalTo: dobImage.bottomAnchor).isActive = true
+        dobTextField.trailingAnchor.constraint(equalTo: dobView.trailingAnchor).isActive = true
+        dobTextField.leadingAnchor.constraint(equalTo: dobImage.trailingAnchor, constant: 10).isActive = true
+        
+        phoneImage.topAnchor.constraint(equalTo: phoneView.topAnchor).isActive = true
+        phoneImage.bottomAnchor.constraint(equalTo: phoneView.bottomAnchor).isActive = true
+        phoneImage.leadingAnchor.constraint(equalTo: phoneView.leadingAnchor, constant: 0.002).isActive = true
+        
+        phoneTextField.topAnchor.constraint(equalTo: phoneImage.topAnchor).isActive = true
+        phoneTextField.bottomAnchor.constraint(equalTo: phoneImage.bottomAnchor).isActive = true
+        phoneTextField.trailingAnchor.constraint(equalTo: phoneView.trailingAnchor).isActive = true
+        phoneTextField.leadingAnchor.constraint(equalTo: phoneImage.trailingAnchor, constant: 10).isActive = true
+        
+        passwordImage.topAnchor.constraint(equalTo: passwordView.topAnchor).isActive = true
+        passwordImage.bottomAnchor.constraint(equalTo: passwordView.bottomAnchor).isActive = true
+        passwordImage.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 0.003).isActive = true
+        
+        passwordTextField.topAnchor.constraint(equalTo: passwordImage.topAnchor).isActive = true
+        passwordTextField.bottomAnchor.constraint(equalTo: passwordImage.bottomAnchor).isActive = true
+        passwordTextField.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor).isActive = true
+        passwordTextField.leadingAnchor.constraint(equalTo: passwordImage.trailingAnchor, constant: 10).isActive = true
+        
+        rePasswordImage.topAnchor.constraint(equalTo: rePasswordView.topAnchor).isActive = true
+        rePasswordImage.bottomAnchor.constraint(equalTo: rePasswordView.bottomAnchor).isActive = true
+        rePasswordImage.leadingAnchor.constraint(equalTo: rePasswordView.leadingAnchor, constant: 0.004).isActive = true
+        
+        rePasswordTextField.topAnchor.constraint(equalTo: rePasswordImage.topAnchor).isActive = true
+        rePasswordTextField.bottomAnchor.constraint(equalTo: rePasswordImage.bottomAnchor).isActive = true
+        rePasswordTextField.trailingAnchor.constraint(equalTo: rePasswordView.trailingAnchor).isActive = true
+        rePasswordTextField.leadingAnchor.constraint(equalTo: rePasswordImage.trailingAnchor, constant: 10).isActive = true
+        
+        stackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 50).isActive = true
+        
+        logoImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
+        logoImage.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        logoImage.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -50).isActive = true
+        
+        signUpButton.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
+        signUpButton.centerYAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 75).isActive = true
+        signUpButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+        signUpButton.heightAnchor.constraint(equalTo: rePasswordView.heightAnchor).isActive = true
+        signUpButton.layer.cornerRadius = 45/2
+        
+        loginLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        loginLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
+        dobTextField.inputView = dobPicker
+        dobTextField.inputAccessoryView = createToolbar()
+    }
+    
+    @objc func onPressLoginLabel() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func onPressSignUp() {
+        ProgressHUD.show()
+        guard let name = nameTextField.text, let dob = dobTextField.text, let email = phoneTextField.text, let password = passwordTextField.text, let repassword = rePasswordTextField.text else { return }
+
+        if password == repassword {
+            Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                let usersDatabase = self.database.child("Users").child((authResult?.user.uid)!)
+                let acc = ["name":name, "dob": dob, "email": email, "password": password]
+                usersDatabase.updateChildValues(acc) { (err, data) in
+                    if err != nil {
+                        print(err!)
+                        return
+                    }
+                }
+                let perInforVC = PerInforViewController()
+                let navigationC = UINavigationController(rootViewController: perInforVC)
+                navigationC.modalPresentationStyle = .fullScreen
+                self.present(navigationC, animated: true) {
+                    self.phoneTextField.text = ""
+                    self.nameTextField.text = ""
+                    self.dobTextField.text = ""
+                    self.passwordTextField.text = ""
+                    self.rePasswordTextField.text = ""
+                }
+                ProgressHUD.dismiss()
+            }
+        }
+        
+        
+//        self.dismiss(animated: true) {
+//            self.phoneTextField.text = ""
+//            self.nameTextField.text = ""
+//            self.dobTextField.text = ""
+//            self.passwordTextField.text = ""
+//            self.rePasswordTextField.text = ""
+//        }
+    }
+    
+    func underlineTextField(subView: UIView) {
+        let underlineView = UIView()
+        underlineView.translatesAutoresizingMaskIntoConstraints = false
+        underlineView.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        containerView.addSubview(underlineView)
+        
+        NSLayoutConstraint.activate([
+            underlineView.leadingAnchor.constraint(equalTo: subView.leadingAnchor),
+            underlineView.trailingAnchor.constraint(equalTo: subView.trailingAnchor),
+            underlineView.bottomAnchor.constraint(equalTo: subView.bottomAnchor, constant: -5),
+            underlineView.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    func createToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(onPressDone))
+        toolbar.setItems([doneButton], animated: true)
+        
+        return toolbar
+    }
+    
+    @objc func onPressDone() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        
+        self.dobTextField.text = dateFormatter.string(from: dobPicker.date)
+        self.view.endEditing(true)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .darkContent
+    }
+}
