@@ -233,13 +233,11 @@
 			children = (
 				1820F43B26A0714400437BAC /* SplashViewController.swift */,
 				1887EF3726847A01004C8A4C /* LoginViewController.swift */,
-				184B83BE26F7301700A70240 /* ForgotViewController.swift */,
+				18FF965226F82EB50069BFF7 /* ForgotPassword */,
 				1864FF5C2699B02200E3F734 /* SignUp */,
 				18E2751726A41D8B007187D5 /* Personal Infomation */,
 				18E2751826A41DBC007187D5 /* Head Teacher */,
 				1873D5B726CE58D500585D4A /* Subject Teacher */,
-				18EFFFB826F77F3D003E3AAC /* ConfirmViewController.swift */,
-				18EFFFBA26F78E3B003E3AAC /* ChangePasswordViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -296,6 +294,16 @@
 				18E128CA26C275BE001269DB /* ChatLogController.swift */,
 			);
 			path = "Head Teacher";
+			sourceTree = "<group>";
+		};
+		18FF965226F82EB50069BFF7 /* ForgotPassword */ = {
+			isa = PBXGroup;
+			children = (
+				184B83BE26F7301700A70240 /* ForgotViewController.swift */,
+				18EFFFB826F77F3D003E3AAC /* ConfirmViewController.swift */,
+				18EFFFBA26F78E3B003E3AAC /* ChangePasswordViewController.swift */,
+			);
+			path = ForgotPassword;
 			sourceTree = "<group>";
 		};
 		6CBF1ECBDF297551DDAFC241 /* Pods */ = {

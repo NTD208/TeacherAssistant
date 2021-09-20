@@ -165,7 +165,10 @@ extension SubjectSemester1: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! SubjectCell
         let lesson = lessons[indexPath.row]
-        cell.lesson = lesson
+//        if (indexPath.section + 1) == lesson.chapter {
+            cell.lesson = lesson
+//        }
+        
         return cell
     }
     

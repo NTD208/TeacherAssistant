@@ -61,15 +61,9 @@ class LessonViewController: UIViewController {
     }
     
     var owner:String?
-    
     var row:Int?
-    
-//    var datas:[DetailLesson] = detaiLessonData
-    var details = [DetailLesson]()
-    var detailsDictionary = [String: DetailLesson]()
-    
+    var detail:DetailLesson?
     var timer:Timer!
-    
     let database = Database.database().reference()
 
     override func viewDidLoad() {
@@ -147,8 +141,7 @@ class LessonViewController: UIViewController {
             ref.child(detaiId).observe(.value) { snap in
                 if let dictionary = snap.value as? [String: AnyObject] {
                     if dictionary["owner"] as? String == self.owner {
-                        let detail = DetailLesson(dictionary: dictionary)
-                        self.detailsDictionary[detaiId] = detail
+                        self.detail = DetailLesson(dictionary: dictionary)
                         self.attemptReloadOfTable()
                     }
                 }
@@ -162,10 +155,6 @@ class LessonViewController: UIViewController {
     }
     
     @objc func handleReloadTable() {
-        self.details = Array(self.detailsDictionary.values)
-        
-        print(details)
-        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -179,20 +168,19 @@ extension LessonViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LessonCell") as! LessonCell
-//        switch indexPath.section {
-//        case 0:
-//            cell.descriptionLabel.text = details[1].generalInfo
-//        case 1:
-//            cell.descriptionLabel.text = details[1].activityOfTeacher
-//        case 2:
-//            cell.descriptionLabel.text = details[1].activityOfStudent
-//        case 3:
-//            cell.descriptionLabel.text = details[1].note
-//        default:
-//            break
-//        }
-        let detail = details[indexPath.row]
-        cell.detail = detail
+        switch indexPath.section {
+        case 0:
+            cell.descriptionLabel.text = detail?.generalInfo
+        case 1:
+            cell.descriptionLabel.text = detail?.activityOfTeacher
+        case 2:
+            cell.descriptionLabel.text = detail?.activityOfStudent
+        case 3:
+            cell.descriptionLabel.text = detail?.note
+        default:
+            break
+        }
+        
         return cell
     }
     
@@ -202,25 +190,38 @@ extension LessonViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let editVC = EditViewController()
-//        editVC.data = self.datas[row!]
+        editVC.data = detail
         editVC.section = indexPath.section
         switch indexPath.section {
         case 0:
             editVC.titleHeader = "Thông tin chung"
+            editVC.passDetailLesson = { data in
+//                self.detai.generalInfo = data
+                self.tableView.reloadData()
+            }
         case 1:
             editVC.titleHeader = "Hoạt động của giáo viên"
+            editVC.passDetailLesson = { data in
+//                self.detai.generalInfo = data
+                self.tableView.reloadData()
+            }
         case 2:
             editVC.titleHeader = "Hoạt động của học sinh"
+            editVC.passDetailLesson = { data in
+//                self.detai.generalInfo = data
+                self.tableView.reloadData()
+            }
         case 3:
             editVC.titleHeader = "Các lưu ý"
+            editVC.passDetailLesson = { data in
+//                self.detai.generalInfo = data
+                self.tableView.reloadData()
+            }
         default:
             editVC.titleHeader = ""
         }
             
-//        editVC.passDetailLesson = { data in
-//            self.datas[0] = data
-//            self.tableView.reloadData()
-//        }
+        
             
             self.navigationController?.pushViewController(editVC, animated: true)
     }

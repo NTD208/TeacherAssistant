@@ -27,7 +27,6 @@ class EditViewController: UIViewController {
     var titleHeader:String?
     var data:DetailLesson?
     var section:Int?
-//    var datas:[DetailLesson] = detaiLessonData
     var passDetailLesson:((DetailLesson) -> Void)?
     
     override func viewDidLoad() {
@@ -75,9 +74,21 @@ class EditViewController: UIViewController {
     }
     
     @objc func saveData() {
-//        guard let description = descriptionTextView.text else {
-//            return
-//        }
-        navigationController?.popViewController(animated: true)
+//        guard let description = descriptionTextView.text else { return }
+        
+//        navigationController?.popViewController(animated: true)
+        
+        let alert = UIAlertController(title: "Thông báo", message: "Lưu lại các thay đổi", preferredStyle: .alert)
+        let submitAction = UIAlertAction(title: "Lưu", style: .default) { _ in
+            //
+            self.navigationController?.popViewController(animated: true)
+        }
+        let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+        
+        alert.addAction(submitAction)
+        alert.addAction(cancelAction)
+        alert.preferredAction = submitAction
+        present(alert, animated: true, completion: nil)
     }
 }
