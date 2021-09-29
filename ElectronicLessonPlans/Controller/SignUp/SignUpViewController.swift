@@ -222,6 +222,11 @@ class SignUpViewController: UIViewController {
         signUpButton.addTarget(self, action: #selector(onPressSignUp), for: .touchUpInside)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+    
     func setupLayout() {
         self.view.addSubview(containerView)
         containerView.addSubview(logoImage)
@@ -313,12 +318,12 @@ class SignUpViewController: UIViewController {
         rePasswordTextField.leadingAnchor.constraint(equalTo: rePasswordImage.trailingAnchor, constant: 10).isActive = true
         
         stackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 50).isActive = true
+        stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
         
         logoImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        logoImage.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        logoImage.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -50).isActive = true
+        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 1/3).isActive = true
+        logoImage.heightAnchor.constraint(equalTo: logoImage.widthAnchor).isActive = true
+        logoImage.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -30).isActive = true
         
         signUpButton.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
         signUpButton.centerYAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 75).isActive = true
@@ -327,14 +332,14 @@ class SignUpViewController: UIViewController {
         signUpButton.layer.cornerRadius = 45/2
         
         loginLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        loginLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        loginLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
         dobTextField.inputView = dobPicker
         dobTextField.inputAccessoryView = createToolbar()
     }
     
     @objc func onPressLoginLabel() {
-        self.dismiss(animated: true, completion: nil)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func onPressSignUp() {
@@ -356,27 +361,10 @@ class SignUpViewController: UIViewController {
                     }
                 }
                 let perInforVC = PerInforViewController()
-                let navigationC = UINavigationController(rootViewController: perInforVC)
-                navigationC.modalPresentationStyle = .fullScreen
-                self.present(navigationC, animated: true) {
-                    self.phoneTextField.text = ""
-                    self.nameTextField.text = ""
-                    self.dobTextField.text = ""
-                    self.passwordTextField.text = ""
-                    self.rePasswordTextField.text = ""
-                }
+                self.navigationController?.pushViewController(perInforVC, animated: true)
                 ProgressHUD.dismiss()
             }
         }
-        
-        
-//        self.dismiss(animated: true) {
-//            self.phoneTextField.text = ""
-//            self.nameTextField.text = ""
-//            self.dobTextField.text = ""
-//            self.passwordTextField.text = ""
-//            self.rePasswordTextField.text = ""
-//        }
     }
     
     func underlineTextField(subView: UIView) {

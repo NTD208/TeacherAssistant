@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ForgotViewController: UIViewController {
     
@@ -44,10 +45,10 @@ class ForgotViewController: UIViewController {
     let phoneTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Số điện thoại"
+        textField.placeholder = "Email"
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
-//        textField.text = "du@gmail.com"
+        textField.text = "du@gmail.com"
         return textField
     }()
     
@@ -100,8 +101,8 @@ class ForgotViewController: UIViewController {
         titleLabel.bottomAnchor.constraint(equalTo: containerView.centerYAnchor, constant: -20).isActive = true
         
         logoImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        logoImage.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 1/3).isActive = true
+        logoImage.heightAnchor.constraint(equalTo: logoImage.widthAnchor).isActive = true
         logoImage.bottomAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -50).isActive = true
         
         backButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -126,11 +127,36 @@ class ForgotViewController: UIViewController {
     }
     
     @objc func handleSend() {
-        let confirmVC = ConfirmViewController()
-        confirmVC.phone = phoneTextField.text
-        confirmVC.modalPresentationStyle = .fullScreen
-        present(confirmVC, animated: true) {
-            self.phoneTextField.text = nil
+        Auth.auth().sendPasswordReset(withEmail: phoneTextField.text!) { error in
+            if error != nil {
+                let alert = UIAlertController(title: "Thông báo", message: "Địa chỉ email không chính xác.", preferredStyle: .alert)
+                
+                let submitAction = UIAlertAction(title: "OK", style: .default) { _ in
+                    self.phoneTextField.text = nil
+                }
+                
+                alert.addAction(submitAction)
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
+            
+            let alert = UIAlertController(title: "Thông báo", message: "Hãy truy cập đường link được gửi trong email để đổi mật khẩu.", preferredStyle: .alert)
+            
+            let submitAction = UIAlertAction(title: "OK", style: .default) { _ in
+                self.dismiss(animated: true) {
+                    self.phoneTextField.text = nil
+                }
+            }
+            
+            alert.addAction(submitAction)
+            self.present(alert, animated: true, completion: nil)
+            
+//            let confirmVC = ConfirmViewController()
+//            confirmVC.phone = self.phoneTextField.text
+//            confirmVC.modalPresentationStyle = .fullScreen
+//            self.present(confirmVC, animated: true) {
+//                self.phoneTextField.text = nil
+//            }
         }
     }
     
@@ -146,5 +172,9 @@ class ForgotViewController: UIViewController {
             underlineView.bottomAnchor.constraint(equalTo: subView.bottomAnchor, constant: -5),
             underlineView.heightAnchor.constraint(equalToConstant: 1)
         ])
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
 }

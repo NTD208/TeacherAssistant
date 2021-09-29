@@ -216,9 +216,9 @@ class PerInforViewController: UIViewController {
     
     let kindOfNumber = ["", "A1", "A2", "A3", "A4", "A5", "A6"]
     
-    let pickerPrimarySubject = ["Toán", "Tiếng việt"]
+    let pickerPrimarySubject = ["Toán", "Tiếng việt", "Đạo đức", "Mỹ thuật", "Âm nhạc", "Tự nhiên xã hội/Khoa học", "Hoạt động trải nghiệm", "Giáo dục thể chất", "Tin học", "Kỹ thuật", "Lịch sử & Địa lý"]
     
-    let pickerSecondarySubject = ["Vật lí ", "Hoá học"]
+    let pickerSecondarySubject = ["Toán", "Ngữ Văn", "Vật lý ", "Hoá học", "Tiếng Anh", "Địa lý", "Lịch sử", "Công nghệ", "Âm nhạc & Mỹ thuật", "Giáo dục công dân", "Sinh học"]
     
     let pickerHighSchoolSubject = ["Đại số & Hình học", "Ngữ Văn", "Vật lí", "Hoá học", "Giáo dục quốc phòng", "Lịch sử", "Địa lí", "Giáo dục công dân", "Sinh học", "Giáo dục thể chất", "Tin học"]
     
@@ -237,7 +237,7 @@ class PerInforViewController: UIViewController {
     let tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
-        table.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        table.backgroundColor = .blueInLogo
         return table
     }()
     
@@ -246,7 +246,7 @@ class PerInforViewController: UIViewController {
     var isSlideInMenuPresented = false
         
     let uid = Auth.auth().currentUser?.uid
-    
+        
     var levelLabelCenterYAnchor: NSLayoutConstraint?
     var classLabelCenterYAnchor: NSLayoutConstraint?
     var subjectLabelCenterYAnchor: NSLayoutConstraint?
@@ -255,9 +255,6 @@ class PerInforViewController: UIViewController {
         super.viewDidLoad()
         
         setupLayout()
-        
-        ProgressHUD.show()
-        checkUserAndFillInfor()
         
         let menuButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(tappedMenu))
         navigationItem.setLeftBarButton(menuButton, animated: false)
@@ -273,9 +270,21 @@ class PerInforViewController: UIViewController {
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImage)))
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = false
         navigationController?.navigationBar.barStyle = .black
+        navigationItem.title = "Thông tin cá nhân"
+        navigationController?.navigationBar.isTranslucent = false
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .blueInLogo
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.yellowInLogo]
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.standardAppearance = appearance;
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        
+        checkUserAndFillInfor()
     }
     
     func setupLayout() {
@@ -286,11 +295,6 @@ class PerInforViewController: UIViewController {
         gradientLayer.colors = [#colorLiteral(red: 0.974270761, green: 0.9642215371, blue: 0.9773648381, alpha: 1).cgColor, #colorLiteral(red: 0.8661997318, green: 0.8461599946, blue: 0.8638817668, alpha: 1).cgColor]
         gradientLayer.shouldRasterize = true
         containerView.layer.addSublayer(gradientLayer)
-        navigationItem.title = "Thông tin cá nhân"
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = UIColor.blueInLogo
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.yellowInLogo]
-        navigationController?.navigationBar.tintColor = UIColor.white
         
         menuView.pinMenuTo(view, with: slideInMenuPadding)
         containerView.edgeTo(view)
@@ -389,7 +393,7 @@ class PerInforViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        
+        tableView.alwaysBounceVertical = false
         tableView.tableFooterView = UIView()
     }
     
@@ -493,6 +497,7 @@ class PerInforViewController: UIViewController {
     @objc func tappedMenu() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseInOut) {
             self.containerView.frame.origin.x = self.isSlideInMenuPresented ? 0 : self.containerView.frame.width - self.slideInMenuPadding
+//            self.navigationController?.navigationBar.frame.origin.x = self.containerView.frame.origin.x
         } completion: { finished in
             self.isSlideInMenuPresented.toggle()
         }
@@ -509,9 +514,9 @@ class PerInforViewController: UIViewController {
         self.present(picker, animated: true, completion: nil)
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
     
     private func checkUserAndFillInfor() {
         let uid = Auth.auth().currentUser?.uid
@@ -715,17 +720,18 @@ extension PerInforViewController: UITableViewDelegate, UITableViewDataSource {
             messageVC.tabBarItem.image = UIImage(systemName: "message.fill")
             messageVC.tabBarItem.badgeValue = "N+"
             
-            tabBarC.setViewControllers([contactVC, messageVC], animated: true)
+            tabBarC.navigationController?.navigationBar.barStyle = .black
             tabBarC.modalPresentationStyle = .fullScreen
             self.present(tabBarC, animated: true, completion: nil)
-//            navigationController?.pushViewController(tabBarC, animated: true)
         case 2:
-            let mainVC = UINavigationController(rootViewController: MainScreenViewController())
-            mainVC.modalPresentationStyle = .fullScreen
-            self.present(mainVC, animated: true, completion: nil)
+            let mainVC = MainScreenViewController()
+            navigationController?.pushViewController(mainVC, animated: true)
+//            mainVC.modalPresentationStyle = .fullScreen
+//            self.present(mainVC, animated: true, completion: nil)
         case 3:
             try? Auth.auth().signOut()
-            self.dismiss(animated: true, completion: nil)
+//            self.dismiss(animated: true, completion: nil)
+            self.navigationController?.popToRootViewController(animated: true)
         default:
             break
         }

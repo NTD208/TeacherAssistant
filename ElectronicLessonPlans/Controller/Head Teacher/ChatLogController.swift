@@ -23,9 +23,6 @@ class ChatLogController: UIViewController {
         let flowLayout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         view.translatesAutoresizingMaskIntoConstraints = false
-//        flowLayout.scrollDirection = .horizontal
-//        view.backgroundColor = .clear
-//        view.layer.cornerRadius = 20
         return view
     }()
     
@@ -39,7 +36,6 @@ class ChatLogController: UIViewController {
     let sendButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-//        button.setTitle("Gửi", for: .normal)
         button.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
         return button
     }()
@@ -49,6 +45,9 @@ class ChatLogController: UIViewController {
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.placeholder = "Tin nhắn văn bản"
         tf.adjustsFontSizeToFitWidth = true
+        tf.borderStyle = .roundedRect
+        tf.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 0))
+        tf.leftViewMode = .always
         return tf
     }()
     
@@ -57,7 +56,7 @@ class ChatLogController: UIViewController {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.image = UIImage(systemName: "photo.on.rectangle.angled")
         image.contentMode = .scaleAspectFit
-        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        image.tintColor = .blueInLogo
         image.alpha = 0.6
         return image
     }()
@@ -97,7 +96,7 @@ class ChatLogController: UIViewController {
         uploadImage.isUserInteractionEnabled = true
         uploadImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadTap)))
         
-        setupKeyboardObservers()
+//        setupKeyboardObservers()
     }
     
     func setupLayout() {
@@ -169,7 +168,7 @@ class ChatLogController: UIViewController {
             
             let userMessagesRef = FirebaseDatabase.Database.database().reference().child("User-Messages").child(fromId).child(toId)
             let messageId = childRef.key
-            let dic = [messageId: 1] as! [String: Any]
+            let dic = [messageId: 1]
             userMessagesRef.updateChildValues(dic)
             
             let recipientUserMessagesRef = FirebaseDatabase.Database.database().reference().child("User-Messages").child(toId).child(fromId)
@@ -257,12 +256,7 @@ class ChatLogController: UIViewController {
     }
     
     @objc func handleUploadTap() {
-        let imagePicker = UIImagePickerController()
-        
-        imagePicker.allowsEditing = true
-        imagePicker.delegate = self
-        
-        self.present(imagePicker, animated: true, completion: nil)
+        presentPhotoActionSheet()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -356,6 +350,35 @@ extension ChatLogController: UICollectionViewDelegate, UICollectionViewDataSourc
 }
 
 extension ChatLogController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func presentPhotoActionSheet() {
+        let actionSheet = UIAlertController(title: "Ảnh", message: "Bạn muốn chọn ảnh từ thư viện hay chụp ảnh?", preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Huỷ", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Chụp ảnh", style: .default, handler: { _ in
+            self.presentCamera()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Chọn ảnh", style: .default, handler: { _ in
+            self.presentPhotoPicker()
+        }))
+        
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func presentCamera() {
+        let vc = UIImagePickerController()
+        vc.sourceType = .camera
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true, completion: nil)
+    }
+    
+    func presentPhotoPicker() {
+        let vc = UIImagePickerController()
+        vc.sourceType = .photoLibrary
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true, completion: nil)
+    }
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -420,7 +443,7 @@ extension ChatLogController: UIImagePickerControllerDelegate, UINavigationContro
             
             let userMessagesRef = FirebaseDatabase.Database.database().reference().child("User-Messages").child(fromId).child(toId)
             let messageId = childRef.key
-            let dic = [messageId: 1] as! [String: Any]
+            let dic = [messageId: 1]
             userMessagesRef.updateChildValues(dic)
             
             let recipientUserMessagesRef = FirebaseDatabase.Database.database().reference().child("User-Messages").child(toId).child(fromId)

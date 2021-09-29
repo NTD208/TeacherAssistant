@@ -54,6 +54,11 @@ class SplashViewController: UIViewController {
         timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(goToLogin), userInfo: nil, repeats: true)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        navigationController?.navigationBar.barStyle = .black
+    }
+    
     func setupLayout() {
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -72,7 +77,7 @@ class SplashViewController: UIViewController {
     
     @objc func goToLogin() {
         timer.invalidate()
-        let loginVC = LoginViewController()
+        let loginVC = UINavigationController(rootViewController: LoginViewController())
         loginVC.modalPresentationStyle = .fullScreen
         self.present(loginVC, animated: true, completion: nil)
     }

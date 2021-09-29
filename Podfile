@@ -12,5 +12,7 @@ target 'ElectronicLessonPlans' do
   pod 'Firebase/Auth'
   pod 'Firebase/Storage'
   pod 'ProgressHUD'
+  # pod 'Toast-Swift'
+  pod 'IQKeyboardManagerSwift'
 
 end

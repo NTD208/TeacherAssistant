@@ -6,8 +6,9 @@
 //
 
 import UIKit
-import FirebaseAuth
+import Firebase
 import ProgressHUD
+//import Toast_Swift
 
 class LoginViewController: UIViewController {
         
@@ -15,6 +16,12 @@ class LoginViewController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.clipsToBounds = true
+        return scrollView
     }()
     
     let logoImage: UIImageView = {
@@ -29,6 +36,8 @@ class LoginViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Email"
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.text = "du@gmail.com"
@@ -39,6 +48,8 @@ class LoginViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Mật khẩu"
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
         textField.isSecureTextEntry = true
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
@@ -50,7 +61,7 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.attributedText = NSAttributedString(string: "Quên mật khẩu?", attributes: [.underlineStyle: NSUnderlineStyle.single.rawValue])
-        label.textColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        label.textColor = .blueInLogo
         label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
@@ -61,7 +72,7 @@ class LoginViewController: UIViewController {
         button.setTitle("Đăng nhập", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        button.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        button.backgroundColor = .blueInLogo
         return button
     }()
     
@@ -69,7 +80,7 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.attributedText = NSAttributedString(string: "Bạn chưa có tài khoản? Đăng ký ngay.", attributes: [.underlineStyle: NSUnderlineStyle.single.rawValue])
-        label.textColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        label.textColor = .blueInLogo
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         return label
@@ -112,7 +123,7 @@ class LoginViewController: UIViewController {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.image = UIImage(systemName: "envelope.fill")
         image.contentMode = .scaleAspectFit
-        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        image.tintColor = .blueInLogo
         return image
     }()
     
@@ -121,7 +132,7 @@ class LoginViewController: UIViewController {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.image = UIImage(systemName: "lock.fill")
         image.contentMode = .scaleAspectFit
-        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        image.tintColor = .blueInLogo
         return image
     }()
     
@@ -130,11 +141,17 @@ class LoginViewController: UIViewController {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.image = UIImage(systemName: "eye.fill")
         image.contentMode = .scaleAspectFit
-        image.tintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        image.tintColor = .blueInLogo
         return image
     }()
     
     var isShow:Bool = false
+    
+    let ref = Database.database().reference().child("Users")
+    
+    var user:User?
+    
+    var stackViewCenterYAnchor: NSLayoutConstraint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -159,6 +176,11 @@ class LoginViewController: UIViewController {
         eyeImage.addGestureRecognizer(tapGesture)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+    
     func setupLayout() {
         self.overrideUserInterfaceStyle = .light
         
@@ -169,8 +191,9 @@ class LoginViewController: UIViewController {
         containerView.layer.addSublayer(gradientLayer)
         
         self.view.addSubview(containerView)
-        containerView.addSubview(logoImage)
-        containerView.addSubview(stackView)
+        containerView.addSubview(scrollView)
+        scrollView.addSubview(logoImage)
+        scrollView.addSubview(stackView)
         stackView.addArrangedSubview(phoneView)
         stackView.addArrangedSubview(passwordView)
         
@@ -184,16 +207,18 @@ class LoginViewController: UIViewController {
         stackView.addArrangedSubview(forgotView)
         
         forgotView.addSubview(forgotLabel)
-        containerView.addSubview(loginButton)
-        containerView.addSubview(signUpLabel)
+        scrollView.addSubview(loginButton)
+        scrollView.addSubview(signUpLabel)
         
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         containerView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         containerView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         
+        scrollView.frame = self.view.bounds
+        
         phoneView.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        phoneView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        phoneView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.85).isActive = true
         passwordView.heightAnchor.constraint(equalTo: phoneView.heightAnchor).isActive = true
         passwordView.widthAnchor.constraint(equalTo: phoneView.widthAnchor).isActive = true
         forgotView.heightAnchor.constraint(equalTo: passwordView.heightAnchor).isActive = true
@@ -221,15 +246,15 @@ class LoginViewController: UIViewController {
         passwordTextField.leadingAnchor.constraint(equalTo: passwordImage.trailingAnchor, constant: 10).isActive = true
         passwordTextField.trailingAnchor.constraint(equalTo: eyeImage.leadingAnchor, constant: 10).isActive = true
                 
-        stackView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 50).isActive = true
+        stackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        stackView.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor, constant: 50).isActive = true
         
         forgotLabel.topAnchor.constraint(equalTo: forgotView.topAnchor).isActive = true
         forgotLabel.trailingAnchor.constraint(equalTo: stackView.trailingAnchor).isActive = true
         
-        logoImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        logoImage.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        logoImage.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        logoImage.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        logoImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 1/3).isActive = true
+        logoImage.heightAnchor.constraint(equalTo: logoImage.widthAnchor).isActive = true
         logoImage.bottomAnchor.constraint(equalTo: stackView.topAnchor, constant: -50).isActive = true
         
         loginButton.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
@@ -238,8 +263,8 @@ class LoginViewController: UIViewController {
         loginButton.heightAnchor.constraint(equalTo: phoneTextField.heightAnchor).isActive = true
         loginButton.layer.cornerRadius = 45/2
         
-        signUpLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        signUpLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        signUpLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        signUpLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
     }
     
     @objc func onPressForgot() {
@@ -252,7 +277,7 @@ class LoginViewController: UIViewController {
         guard let email = phoneTextField.text, let password = passwordTextField.text else { return }
         
         ProgressHUD.show()
-        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
+        Auth.auth().signIn(withEmail: email, password: password) { (_, error) in
             if error != nil {
                 let alert = UIAlertController(title: "Thông báo", message: "Email hoặc Mật khẩu không chính xác", preferredStyle: .alert)
                 
@@ -263,26 +288,20 @@ class LoginViewController: UIViewController {
             }
             ProgressHUD.dismiss()
             let perInforVC = PerInforViewController()
-            let navigationC = UINavigationController(rootViewController: perInforVC)
-            navigationC.modalPresentationStyle = .fullScreen
-            self.present(navigationC, animated: true) {
-                self.phoneTextField.text = ""
-                self.passwordTextField.text = ""
-            }
+            self.navigationController?.pushViewController(perInforVC, animated: true)
         }
     }
     
     @objc func onPressSignUp() {
         let registerVC = SignUpViewController()
-        registerVC.modalPresentationStyle = .fullScreen
-        self.present(registerVC, animated: true, completion: nil)
+        navigationController?.pushViewController(registerVC, animated: true)
     }
     
     func underlineTextField(subView: UIView) {
         let underlineView = UIView()
         underlineView.translatesAutoresizingMaskIntoConstraints = false
-        underlineView.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
-        containerView.addSubview(underlineView)
+        underlineView.backgroundColor = .blueInLogo
+        scrollView.addSubview(underlineView)
         
         NSLayoutConstraint.activate([
             underlineView.leadingAnchor.constraint(equalTo: subView.leadingAnchor),

@@ -25,69 +25,260 @@ class SubjectSemester2: UIViewController {
     
     let uid = Auth.auth().currentUser?.uid
     
+    var chapter3 = [Lesson]()
+    var chapter4 = [Lesson]()
+    var max = Int.min
+    var min = Int.max
+    var maxInSemester1:Int!
+    
+    var timer: Timer!
+    
+    var subject:Subject? {
+        didSet {
+            if let subject = subject {
+                navigationItem.title = subject.name
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupLayout()
+        
+        fetchLessons()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tabBarController?.tabBar.isHidden = false
+        tabBarController?.tabBar.backgroundColor = .tabBarColor
+        
+        navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.isTranslucent = false
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .blueInLogo
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.yellowInLogo]
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.standardAppearance = appearance;
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
     
     func setupLayout() {
         self.tabBarController?.overrideUserInterfaceStyle = .light
-        
-        navigationController?.navigationBar.barStyle = .black
-        
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(red: 0.9907737374, green: 0.7321282029, blue: 0.08257485181, alpha: 1)]
-        navigationController?.navigationBar.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-        
+                
         self.view.addSubview(containerView)
         containerView.addSubview(tableView)
         
         containerView.frame = self.view.bounds
         tableView.frame = containerView.bounds
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleAdd))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .done, target: self, action: #selector(handleBack))
+        
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        
+        tableView.register(SubjectCell.self, forCellReuseIdentifier: "cell")
     }
     
     @objc func handleAdd() {
-        print("Add")
+        let database = Database.database().reference()
+        let alert = UIAlertController(title: "Thêm bài mới", message: "Hoc ki 2", preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.placeholder = "Chương"
+            tf.keyboardType = .numberPad
+        }
+        alert.addTextField { tf in
+            tf.placeholder = "Số thứ tự bài"
+            tf.keyboardType = .numberPad
+        }
+        alert.addTextField { tf in
+            tf.placeholder = "Tên bài"
+        }
+        
+        let submitAction = UIAlertAction(title: "Xong", style: .default) { _ in
+            let answer1 = alert.textFields![0].text
+            let answer2 = alert.textFields![1].text
+            let answer3 = alert.textFields![2].text
+            let refLesson = database.child("Lessons").child("Semester2").child(self.navigationItem.title!)
+            let childRefLesson = refLesson.childByAutoId()
+            let values1 = ["chapter": answer1, "number": answer2, "title": answer3, "owner": self.uid]
+            
+            childRefLesson.updateChildValues(values1 as [String: Any])
+            
+            let refDetailLesson = database.child("Detai_Lesson")
+            let childRefDetailLesson = refDetailLesson.childByAutoId()
+            let values2 = ["general": "Không có", "activityOfTeacher": "Không có", "activityOfStudent": "Không có", "note": "Không có", "owner": childRefLesson.key]
+            
+            childRefDetailLesson.updateChildValues(values2 as [String : Any])
+        }
+        
+        let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
+        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+        
+        alert.addAction(submitAction)
+        alert.addAction(cancelAction)
+        
+        alert.preferredAction = submitAction
+        present(alert, animated: true) {
+            self.fetchLessons()
+        }
     }
     
-    @objc func callBack() {
+    @objc func handleBack() {
         dismiss(animated: true, completion: nil)
     }
     
+    func fetchLessons() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let ref = Database.database().reference().child("Lessons").child("Semester2").child(navigationItem.title!)
+
+        ref.observe(.value) { snapshort in
+
+            if let value = snapshort.value as? [String: Any] {
+                for key in value.keys {
+                    if let dictionary = value[key] as? [String: AnyObject] {
+                        if dictionary["owner"] as? String == uid {
+                            let lesson = Lesson(dictionary: dictionary, id: key)
+                            
+                            guard let chapter = lesson.chapter else { return }
+                            
+                            if Int(chapter)! < self.min {
+                                self.min = Int(chapter)!
+                            }
+                            
+                            if Int(chapter)! > self.max {
+                                self.max = Int(chapter)!
+                            }
+                            
+                            switch Int(chapter)! {
+                            case 3:
+                                self.chapter3.append(lesson)
+                                self.attemptReloadOfTable()
+                            case 4:
+                                self.chapter4.append(lesson)
+                                self.attemptReloadOfTable()
+                            default:
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func attemptReloadOfTable() {
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+    }
+    
+    @objc func handleReloadTable() {
+        self.chapter3.sort { num1, num2 in
+            return Int(num1.number!)! < Int(num2.number!)!
+        }
+        
+        self.chapter4.sort { num1, num2 in
+            return Int(num1.number!)! < Int(num2.number!)!
+        }
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
 }
 
 extension SubjectSemester2: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = "Bài \(indexPath.row + 1)"
-        return cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! SubjectCell
+        
+        switch indexPath.section {
+        case 0:
+            let lesson = chapter3[indexPath.row]
+            cell.lesson = lesson
+            return cell
+        case 1:
+            let lesson = chapter4[indexPath.row]
+            cell.lesson = lesson
+            return cell
+        default:
+            return UITableViewCell()
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        if max < 0 {
+            return max
+        }
+        return max - 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        switch section {
+        case 0:
+            return chapter3.count
+        case 1:
+            return chapter4.count
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Chương \(section + 3)"
+        return "Chương \(section + min)"
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let lessVC = LessonViewController()
-        lessVC.row = indexPath.row + 1
-        navigationController?.pushViewController(lessVC, animated: true)
+        switch indexPath.section {
+        case 0:
+            let lesson = chapter3[indexPath.row]
+            lessVC.lesson = lesson
+            lessVC.row = indexPath.row + 1
+            lessVC.owner = lesson.uid
+            navigationController?.pushViewController(lessVC, animated: true)
+        case 1:
+            let lesson = chapter4[indexPath.row]
+            lessVC.lesson = lesson
+            lessVC.row = indexPath.row + 1
+            lessVC.owner = lesson.uid
+            navigationController?.pushViewController(lessVC, animated: true)
+        default:
+            return
+        }
+        
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let ref = Database.database().reference().child("Lessons")
+        switch indexPath.section {
+        case 0:
+            let deleteAction = UIContextualAction(style: .normal, title: "Delete") { action, view, closure in
+                self.chapter3.remove(at: indexPath.row)
+//                ref.child("Semester1").child(self.chapter1[indexPath.row].uid!).removeValue()
+                self.tableView.reloadData()
+            }
+            deleteAction.backgroundColor = .red
+            
+            let actionConfig = UISwipeActionsConfiguration(actions: [deleteAction])
+            
+            return actionConfig
+        case 1:
+            let deleteAction = UIContextualAction(style: .normal, title: "Delete") { action, view, closure in
+                self.chapter4.remove(at: indexPath.row)
+//                ref.child("Semester1").child(self.chapter2[indexPath.row].uid!).removeValue()
+                self.tableView.reloadData()
+            }
+            deleteAction.backgroundColor = .red
+            
+            let actionConfig = UISwipeActionsConfiguration(actions: [deleteAction])
+            
+            return actionConfig
+        default:
+            return UISwipeActionsConfiguration()
+        }
     }
 }

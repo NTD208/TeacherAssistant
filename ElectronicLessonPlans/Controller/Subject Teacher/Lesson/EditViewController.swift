@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class EditViewController: UIViewController {
     
@@ -24,10 +25,11 @@ class EditViewController: UIViewController {
         return textView
     }()
     
+    let ref = Database.database().reference().child("Detai_Lesson")
+    
     var titleHeader:String?
     var data:DetailLesson?
     var section:Int?
-    var passDetailLesson:((DetailLesson) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,19 +70,32 @@ class EditViewController: UIViewController {
         containerView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         
         descriptionTextView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10).isActive = true
-        descriptionTextView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 10).isActive = true
+        descriptionTextView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         descriptionTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10).isActive = true
-        descriptionTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 10).isActive = true
+        descriptionTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10).isActive = true
     }
     
     @objc func saveData() {
-//        guard let description = descriptionTextView.text else { return }
+        guard let description = descriptionTextView.text, let uuid = data?.uuid else { return }
         
-//        navigationController?.popViewController(animated: true)
+        let childRef = self.ref.child(uuid)
         
         let alert = UIAlertController(title: "Thông báo", message: "Lưu lại các thay đổi", preferredStyle: .alert)
         let submitAction = UIAlertAction(title: "Lưu", style: .default) { _ in
-            //
+
+            switch self.section {
+            case 0:
+                childRef.updateChildValues(["general": description])
+            case 1:
+                childRef.updateChildValues(["activityOfTeacher": description])
+            case 2:
+                childRef.updateChildValues(["activityOfStudent": description])
+            case 3:
+                childRef.updateChildValues(["note": description])
+            default:
+                return
+            }
+            
             self.navigationController?.popViewController(animated: true)
         }
         let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
@@ -90,5 +105,9 @@ class EditViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.preferredAction = submitAction
         present(alert, animated: true, completion: nil)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
 }

@@ -141,7 +141,7 @@ class LessonViewController: UIViewController {
             ref.child(detaiId).observe(.value) { snap in
                 if let dictionary = snap.value as? [String: AnyObject] {
                     if dictionary["owner"] as? String == self.owner {
-                        self.detail = DetailLesson(dictionary: dictionary)
+                        self.detail = DetailLesson(dictionary: dictionary, id: detaiId)
                         self.attemptReloadOfTable()
                     }
                 }
@@ -195,35 +195,17 @@ extension LessonViewController: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.section {
         case 0:
             editVC.titleHeader = "Thông tin chung"
-            editVC.passDetailLesson = { data in
-//                self.detai.generalInfo = data
-                self.tableView.reloadData()
-            }
         case 1:
             editVC.titleHeader = "Hoạt động của giáo viên"
-            editVC.passDetailLesson = { data in
-//                self.detai.generalInfo = data
-                self.tableView.reloadData()
-            }
         case 2:
             editVC.titleHeader = "Hoạt động của học sinh"
-            editVC.passDetailLesson = { data in
-//                self.detai.generalInfo = data
-                self.tableView.reloadData()
-            }
         case 3:
             editVC.titleHeader = "Các lưu ý"
-            editVC.passDetailLesson = { data in
-//                self.detai.generalInfo = data
-                self.tableView.reloadData()
-            }
         default:
             editVC.titleHeader = ""
         }
             
-        
-            
-            self.navigationController?.pushViewController(editVC, animated: true)
+        self.navigationController?.pushViewController(editVC, animated: true)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

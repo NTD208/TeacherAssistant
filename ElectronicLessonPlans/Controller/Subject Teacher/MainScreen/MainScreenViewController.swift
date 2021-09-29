@@ -34,7 +34,7 @@ class MainScreenViewController: UIViewController {
     let tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
-        table.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        table.backgroundColor = .blueInLogo
         return table
     }()
     
@@ -216,9 +216,11 @@ extension MainScreenViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
-            let perInfoVC = UINavigationController(rootViewController: PerInforViewController())
-            perInfoVC.modalPresentationStyle = .fullScreen
-            self.present(perInfoVC, animated: true, completion: nil)
+//            let perInfoVC = UINavigationController(rootViewController: PerInforViewController())
+//            perInfoVC.modalPresentationStyle = .fullScreen
+//            self.present(perInfoVC, animated: true, completion: nil)
+//            self.navigationController?.popToViewController(PerInforViewController(), animated: true)
+            navigationController?.popViewController(animated: true)
         case 1:
             let tabBarC = UITabBarController()
             let contactVC = UINavigationController(rootViewController: ContactViewController())
@@ -238,7 +240,7 @@ extension MainScreenViewController: UITableViewDelegate, UITableViewDataSource {
         case 2:
             break
         case 3:
-            self.dismiss(animated: true, completion: nil)
+            self.navigationController?.popToRootViewController(animated: true)
         default:
             break
         }
@@ -266,12 +268,18 @@ extension MainScreenViewController: UICollectionViewDelegate, UICollectionViewDa
         let tabC = UITabBarController()
         let semester1 = SubjectSemester1()
         let semester2 = SubjectSemester2()
-        tabC.setViewControllers([semester1, semester2], animated: true)
-        semester1.title = "Học kỳ 1"
+        let navigationSemester1 = UINavigationController(rootViewController: semester1)
+        let navigationSemester2 = UINavigationController(rootViewController: semester2)
+        tabC.setViewControllers([navigationSemester1, navigationSemester2], animated: true)
+        semester1.title = "Học kì 1"
+        navigationSemester1.tabBarItem.image = UIImage(systemName: "1.square.fill")
         semester2.title = "Học kỳ 2"
+        navigationSemester2.tabBarItem.image = UIImage(systemName: "2.square.fill")
         let subject = nameSubject[indexPath.row]
         semester1.subject = subject
-        navigationController?.pushViewController(tabC, animated: true)
+        semester2.subject = subject
+        tabC.modalPresentationStyle = .fullScreen
+        present(tabC, animated: true, completion: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

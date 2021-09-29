@@ -32,7 +32,7 @@ class MessageViewController: UIViewController {
     let menuTableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
-        table.backgroundColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
+        table.backgroundColor = .blueInLogo
         return table
     }()
         
@@ -54,34 +54,29 @@ class MessageViewController: UIViewController {
                 
         setupLayout()
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
-        
-        menuTableView.delegate = self
-        menuTableView.dataSource = self
-        
-        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
-        
         observeUserMessages()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         self.tabBarController?.tabBar.isHidden = false
+        navigationItem.title = "Tin nhắn"
+        navigationController?.navigationBar.isTranslucent = false
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .blueInLogo
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.yellowInLogo]
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.standardAppearance = appearance;
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
     
     func  setupLayout() {
-        self.overrideUserInterfaceStyle = .light
-        self.tabBarController?.overrideUserInterfaceStyle = .light
-        navigationController?.navigationBar.barStyle = .black
-        navigationController?.navigationItem.hidesBackButton = true
-
-        navigationItem.title = "Tin nhắn"
-        navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.05545127392, green: 0.2396655977, blue: 0.383887887, alpha: 1)
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(red: 0.9907737374, green: 0.7321282029, blue: 0.08257485181, alpha: 1)]
-        navigationController?.navigationBar.tintColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+//        self.overrideUserInterfaceStyle = .light
+//        self.tabBarController?.overrideUserInterfaceStyle = .light
+        
+//        navigationController?.navigationBar.barStyle = .black
         
         let addButton = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"), style: .plain, target: self, action: #selector(onPressAdd))
         navigationItem.rightBarButtonItem = addButton
@@ -109,6 +104,16 @@ class MessageViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        
+        menuTableView.delegate = self
+        menuTableView.dataSource = self
+        menuTableView.alwaysBounceVertical = false
+        
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
     
     @objc func onPressAdd() {
@@ -122,6 +127,8 @@ class MessageViewController: UIViewController {
     @objc func tappedMenu() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseInOut) {
             self.containerView.frame.origin.x = self.isSlideInMenuPresented ? 0 : self.containerView.frame.width - self.slideInMenuPadding
+            self.tabBarController?.tabBar.frame.origin.x = self.containerView.frame.origin.x
+//            self.navigationController?.navigationBar.frame.origin.x = self.containerView.frame.origin.x
         } completion: { finished in
             self.isSlideInMenuPresented.toggle()
         }
@@ -189,9 +196,9 @@ class MessageViewController: UIViewController {
         }, withCancel: nil)
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
 }
 
 extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
