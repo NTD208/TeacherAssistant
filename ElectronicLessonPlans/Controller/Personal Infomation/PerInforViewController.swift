@@ -21,14 +21,6 @@ class PerInforViewController: UIViewController {
         return view
     }()
     
-    let backgroundImage: UIImageView = {
-        let image = UIImageView()
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "anh")
-        image.contentMode = .scaleAspectFit
-        return image
-    }()
-    
     let scrollView: UIScrollView = {
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -221,30 +213,11 @@ class PerInforViewController: UIViewController {
     let pickerSecondarySubject = ["Toán", "Ngữ Văn", "Vật lý ", "Hoá học", "Tiếng Anh", "Địa lý", "Lịch sử", "Công nghệ", "Âm nhạc & Mỹ thuật", "Giáo dục công dân", "Sinh học"]
     
     let pickerHighSchoolSubject = ["Đại số & Hình học", "Ngữ Văn", "Vật lí", "Hoá học", "Giáo dục quốc phòng", "Lịch sử", "Địa lí", "Giáo dục công dân", "Sinh học", "Giáo dục thể chất", "Tin học"]
-    
-    let titleInMenu = ["Thông tin cá nhân", "Giáo viên chủ nhiệm", "Giáo viên bộ môn", "Đăng xuất"]
-        
+            
     var isEdit: Bool = false
     
     var timer:Timer!
-    
-    let menuView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let tableView: UITableView = {
-        let table = UITableView()
-        table.translatesAutoresizingMaskIntoConstraints = false
-        table.backgroundColor = .blueInLogo
-        return table
-    }()
-    
-    lazy var slideInMenuPadding: CGFloat = view.frame.width * 1/2
-    
-    var isSlideInMenuPresented = false
-        
+                
     let uid = Auth.auth().currentUser?.uid
         
     var levelLabelCenterYAnchor: NSLayoutConstraint?
@@ -256,8 +229,7 @@ class PerInforViewController: UIViewController {
         
         setupLayout()
         
-        let menuButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(tappedMenu))
-        navigationItem.setLeftBarButton(menuButton, animated: false)
+        self.addLeftBarButtonWithImage(UIImage(named: "menu")!)
         
         navigationItem.rightBarButtonItem = self.editButtonItem
         editButtonItem.title = "Sửa"
@@ -296,15 +268,8 @@ class PerInforViewController: UIViewController {
         gradientLayer.shouldRasterize = true
         containerView.layer.addSublayer(gradientLayer)
         
-        menuView.pinMenuTo(view, with: slideInMenuPadding)
         containerView.edgeTo(view)
-        
-        menuView.addSubview(tableView)
-        tableView.topAnchor.constraint(equalTo: menuView.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: menuView.bottomAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: menuView.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: menuView.trailingAnchor).isActive = true
-        
+                
         containerView.addSubview(profileImage)
         containerView.addSubview(nameLabel)
         containerView.addSubview(dobLabel)
@@ -390,11 +355,6 @@ class PerInforViewController: UIViewController {
         subjectPicker.delegate = self
         subjectPicker.dataSource = self
         subjectTextField.inputAccessoryView = createToolbar()
-        
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.alwaysBounceVertical = false
-        tableView.tableFooterView = UIView()
     }
     
     @objc func onPressEdit() {
@@ -493,16 +453,7 @@ class PerInforViewController: UIViewController {
     @objc func onPressDone() {
         self.view.endEditing(true)
     }
-    
-    @objc func tappedMenu() {
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseInOut) {
-            self.containerView.frame.origin.x = self.isSlideInMenuPresented ? 0 : self.containerView.frame.width - self.slideInMenuPadding
-//            self.navigationController?.navigationBar.frame.origin.x = self.containerView.frame.origin.x
-        } completion: { finished in
-            self.isSlideInMenuPresented.toggle()
-        }
-    }
-    
+        
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
@@ -513,10 +464,6 @@ class PerInforViewController: UIViewController {
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
     }
-    
-//    override var preferredStatusBarStyle: UIStatusBarStyle {
-//        return .lightContent
-//    }
     
     private func checkUserAndFillInfor() {
         let uid = Auth.auth().currentUser?.uid
@@ -684,56 +631,6 @@ extension PerInforViewController: UIPickerViewDelegate, UIPickerViewDataSource {
             }
         default:
             return
-        }
-    }
-}
-
-extension PerInforViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = titleInMenu[indexPath.row]
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-            break
-        case 1:
-            let tabBarC = UITabBarController()
-            let contactVC = UINavigationController(rootViewController: ContactViewController())
-            let messageVC = UINavigationController(rootViewController: MessageViewController())
-            
-            tabBarC.setViewControllers([contactVC, messageVC], animated: true)
-            contactVC.title = "Danh bạ"
-            contactVC.tabBarItem.image = UIImage(systemName: "person.crop.circle")
-            contactVC.tabBarItem.badgeValue = "N+"
-            messageVC.title = "Tin nhắn"
-            messageVC.tabBarItem.image = UIImage(systemName: "message.fill")
-            messageVC.tabBarItem.badgeValue = "N+"
-            
-            tabBarC.navigationController?.navigationBar.barStyle = .black
-            tabBarC.modalPresentationStyle = .fullScreen
-            self.present(tabBarC, animated: true, completion: nil)
-        case 2:
-            let mainVC = MainScreenViewController()
-            navigationController?.pushViewController(mainVC, animated: true)
-//            mainVC.modalPresentationStyle = .fullScreen
-//            self.present(mainVC, animated: true, completion: nil)
-        case 3:
-            try? Auth.auth().signOut()
-//            self.dismiss(animated: true, completion: nil)
-            self.navigationController?.popToRootViewController(animated: true)
-        default:
-            break
         }
     }
 }

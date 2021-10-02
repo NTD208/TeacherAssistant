@@ -41,6 +41,7 @@ class LoginViewController: UIViewController {
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.text = "du@gmail.com"
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -54,6 +55,7 @@ class LoginViewController: UIViewController {
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.text = "123456"
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -145,6 +147,26 @@ class LoginViewController: UIViewController {
         return image
     }()
     
+    let errorEmailLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Email không được bỏ trống"
+        return label
+    }()
+    
+    let errorPasswordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Mật khẩu không được bỏ trống"
+        return label
+    }()
+    
     var isShow:Bool = false
     
     let ref = Database.database().reference().child("Users")
@@ -152,7 +174,7 @@ class LoginViewController: UIViewController {
     var user:User?
     
     var stackViewCenterYAnchor: NSLayoutConstraint?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
                
@@ -209,6 +231,8 @@ class LoginViewController: UIViewController {
         forgotView.addSubview(forgotLabel)
         scrollView.addSubview(loginButton)
         scrollView.addSubview(signUpLabel)
+        scrollView.addSubview(errorEmailLabel)
+        scrollView.addSubview(errorPasswordLabel)
         
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -265,6 +289,19 @@ class LoginViewController: UIViewController {
         
         signUpLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         signUpLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
+        
+        errorEmailLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.85).isActive = true
+        errorEmailLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorEmailLabel.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor).isActive = true
+        errorEmailLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        
+        errorPasswordLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 0.85).isActive = true
+        errorPasswordLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorPasswordLabel.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+        errorPasswordLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        
+        errorEmailLabel.isHidden = true
+        errorPasswordLabel.isHidden = true
     }
     
     @objc func onPressForgot() {
@@ -274,21 +311,25 @@ class LoginViewController: UIViewController {
     }
     
     @objc func onPressLogin() {
+        errorEmailLabel.isHidden = true
+        errorPasswordLabel.isHidden = true
         guard let email = phoneTextField.text, let password = passwordTextField.text else { return }
         
-        ProgressHUD.show()
-        Auth.auth().signIn(withEmail: email, password: password) { (_, error) in
-            if error != nil {
-                let alert = UIAlertController(title: "Thông báo", message: "Email hoặc Mật khẩu không chính xác", preferredStyle: .alert)
-                
-                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
-                    NSLog("The \"OK\" alert occured.")
-                }))
-                self.present(alert, animated: true, completion: nil)
+        if isValidation(email: email, password: password) {
+            ProgressHUD.show()
+            Auth.auth().signIn(withEmail: email, password: password) { (_, error) in
+                if error != nil {
+                    let alert = UIAlertController(title: "Thông báo", message: "Email hoặc Mật khẩu không chính xác", preferredStyle: .alert)
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
+                ProgressHUD.dismiss()
+                let perInforVC = PerInforViewController()
+                let slideVC = SlideMenuViewController()
+                let slideMenu = SlideMenuController(mainViewController: UINavigationController(rootViewController: perInforVC), leftMenuViewController: slideVC)
+                self.navigationController?.pushViewController(slideMenu, animated: true)
             }
-            ProgressHUD.dismiss()
-            let perInforVC = PerInforViewController()
-            self.navigationController?.pushViewController(perInforVC, animated: true)
         }
     }
     
@@ -320,6 +361,22 @@ class LoginViewController: UIViewController {
             passwordTextField.isSecureTextEntry = true
             eyeImage.image = UIImage(systemName: "eye.fill")
         }
+    }
+    
+    func isValidation(email: String, password: String) -> Bool {
+        if !email.isEmpty && !password.isEmpty {
+            return true
+        }
+        
+        if email.isEmpty {
+            self.errorEmailLabel.isHidden = false
+        }
+        
+        if password.isEmpty {
+            self.errorPasswordLabel.isHidden = false
+        }
+        
+        return false
     }
     
     // Chạm vào màn hình để tắt keyboard

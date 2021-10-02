@@ -43,17 +43,10 @@ class MainScreenViewController: UIViewController {
         page.translatesAutoresizingMaskIntoConstraints = false
         return page
     }()
-        
-    let titleInMenu = ["Thông tin cá nhân", "Giáo viên chủ nhiệm", "Giáo viên bộ môn", "Đăng xuất"]
-    
+            
     var nameSubject = [Subject]()
-//        ["Toán lớp 6", "Toán lớp 7", "Toán lớp 8", "Toán lớp 9"]
     
     var nameSubjectDictionary = [Int: Subject]()
-    
-    lazy var slideInMenuPadding: CGFloat = view.frame.width * 0.5
-    
-    var isSlideInMenuPresented = false
     
     var timer:Timer!
     
@@ -68,8 +61,7 @@ class MainScreenViewController: UIViewController {
         
         fetchUserWithSubject()
                 
-        let menuButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(tappedMenu))
-        navigationItem.leftBarButtonItem = menuButton
+        self.addLeftBarButtonWithImage(UIImage(named: "menu")!)
     }
     
     override func viewDidLayoutSubviews() {
@@ -97,15 +89,7 @@ class MainScreenViewController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.yellowInLogo]
         navigationController?.navigationBar.tintColor = UIColor.white
         
-        menuView.pinMenuTo(self.view, with: slideInMenuPadding)
         containerView.edgeTo(self.view)
-        
-        menuView.addSubview(tableView)
-        tableView.topAnchor.constraint(equalTo: menuView.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: menuView.bottomAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: menuView.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: menuView.trailingAnchor).isActive = true
-        
         containerView.addSubview(collectionView)
 //        containerView.addSubview(myPage)
         
@@ -119,11 +103,6 @@ class MainScreenViewController: UIViewController {
 //        myPage.widthAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.5).isActive = true
 //        myPage.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        tableView.tableFooterView = UIView()
-        
         collectionView.delegate = self
         collectionView.dataSource = self
         
@@ -137,15 +116,7 @@ class MainScreenViewController: UIViewController {
         myPage.currentPage = 0
         myPage.currentPageIndicatorTintColor = .blue
     }
-    
-    @objc func tappedMenu() {
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseInOut) {
-            self.containerView.frame.origin.x = self.isSlideInMenuPresented ? 0 : self.containerView.frame.width - self.slideInMenuPadding
-        } completion: { finished in
-            self.isSlideInMenuPresented.toggle()
-        }
-    }
-    
+        
     func fetchUserWithSubject() {
         database.child("Users").child(uid!).observeSingleEvent(of: .value, with: { [self] snapshort in
             if let dictionary = snapshort.value as? [String: AnyObject] {
@@ -195,55 +166,6 @@ class MainScreenViewController: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
-    }
-}
-
-extension MainScreenViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = titleInMenu[indexPath.row]
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case 0:
-//            let perInfoVC = UINavigationController(rootViewController: PerInforViewController())
-//            perInfoVC.modalPresentationStyle = .fullScreen
-//            self.present(perInfoVC, animated: true, completion: nil)
-//            self.navigationController?.popToViewController(PerInforViewController(), animated: true)
-            navigationController?.popViewController(animated: true)
-        case 1:
-            let tabBarC = UITabBarController()
-            let contactVC = UINavigationController(rootViewController: ContactViewController())
-            let messageVC = UINavigationController(rootViewController: MessageViewController())
-            
-            tabBarC.setViewControllers([contactVC, messageVC], animated: true)
-            contactVC.title = "Danh bạ"
-            contactVC.tabBarItem.image = UIImage(systemName: "person.crop.circle")
-            contactVC.tabBarItem.badgeValue = "N+"
-            messageVC.title = "Tin nhắn"
-            messageVC.tabBarItem.image = UIImage(systemName: "message.fill")
-            messageVC.tabBarItem.badgeValue = "N+"
-            
-            tabBarC.setViewControllers([contactVC, messageVC], animated: true)
-            tabBarC.modalPresentationStyle = .fullScreen
-            self.present(tabBarC, animated: true, completion: nil)
-        case 2:
-            break
-        case 3:
-            self.navigationController?.popToRootViewController(animated: true)
-        default:
-            break
-        }
     }
 }
 

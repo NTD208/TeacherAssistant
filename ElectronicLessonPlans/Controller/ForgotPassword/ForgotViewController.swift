@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import ProgressHUD
 
 class ForgotViewController: UIViewController {
     
@@ -49,6 +50,7 @@ class ForgotViewController: UIViewController {
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
         textField.text = "du@gmail.com"
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -61,10 +63,20 @@ class ForgotViewController: UIViewController {
         button.backgroundColor = .blueInLogo
         return button
     }()
-
+    
+    let errorLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Email không được bỏ trống"
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupLayout()
         
         underlineTextField(subView: phoneTextField)
@@ -89,6 +101,7 @@ class ForgotViewController: UIViewController {
         containerView.addSubview(titleLabel)
         containerView.addSubview(phoneTextField)
         containerView.addSubview(sendButton)
+        containerView.addSubview(errorLabel)
         
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -120,6 +133,13 @@ class ForgotViewController: UIViewController {
         sendButton.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
         sendButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
         sendButton.layer.cornerRadius = 45/2
+        
+        errorLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorLabel.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor).isActive = true
+        errorLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        errorLabel.isHidden = true
     }
     
     @objc func handleBack() {
@@ -127,37 +147,45 @@ class ForgotViewController: UIViewController {
     }
     
     @objc func handleSend() {
-        Auth.auth().sendPasswordReset(withEmail: phoneTextField.text!) { error in
-            if error != nil {
-                let alert = UIAlertController(title: "Thông báo", message: "Địa chỉ email không chính xác.", preferredStyle: .alert)
+        errorLabel.isHidden = true
+        guard let email = phoneTextField.text else { return }
+        
+        if isValidation(email: email) {
+            ProgressHUD.show()
+            Auth.auth().sendPasswordReset(withEmail: email) { error in
+                if error != nil {
+                    let alert = UIAlertController(title: "Thông báo", message: "Địa chỉ email không chính xác.", preferredStyle: .alert)
+                    
+                    let submitAction = UIAlertAction(title: "OK", style: .default) { _ in
+                        self.phoneTextField.text = nil
+                    }
+                    
+                    alert.addAction(submitAction)
+                    ProgressHUD.dismiss()
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
+                
+                let alert = UIAlertController(title: "Thông báo", message: "Hãy truy cập đường link được gửi trong email để đổi mật khẩu.", preferredStyle: .alert)
                 
                 let submitAction = UIAlertAction(title: "OK", style: .default) { _ in
-                    self.phoneTextField.text = nil
+                    self.dismiss(animated: true) {
+                        self.phoneTextField.text = nil
+                    }
                 }
-                
                 alert.addAction(submitAction)
+                ProgressHUD.dismiss()
                 self.present(alert, animated: true, completion: nil)
-                return
             }
-            
-            let alert = UIAlertController(title: "Thông báo", message: "Hãy truy cập đường link được gửi trong email để đổi mật khẩu.", preferredStyle: .alert)
-            
-            let submitAction = UIAlertAction(title: "OK", style: .default) { _ in
-                self.dismiss(animated: true) {
-                    self.phoneTextField.text = nil
-                }
-            }
-            
-            alert.addAction(submitAction)
-            self.present(alert, animated: true, completion: nil)
-            
-//            let confirmVC = ConfirmViewController()
-//            confirmVC.phone = self.phoneTextField.text
-//            confirmVC.modalPresentationStyle = .fullScreen
-//            self.present(confirmVC, animated: true) {
-//                self.phoneTextField.text = nil
-//            }
         }
+    }
+    
+    func isValidation(email: String) -> Bool {
+        if email.isEmpty {
+            self.errorLabel.isHidden = false
+            return false
+        }
+        return true
     }
     
     func underlineTextField(subView: UITextField) {

@@ -27,6 +27,8 @@ class SubjectSemester2: UIViewController {
     
     var chapter3 = [Lesson]()
     var chapter4 = [Lesson]()
+    var chaptersDictionary3 = [String: Lesson]()
+    var chaptersDictionary4 = [String: Lesson]()
     var max = Int.min
     var min = Int.max
     var maxInSemester1:Int!
@@ -136,34 +138,32 @@ class SubjectSemester2: UIViewController {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let ref = Database.database().reference().child("Lessons").child("Semester2").child(navigationItem.title!)
 
-        ref.observe(.value) { snapshort in
-
-            if let value = snapshort.value as? [String: Any] {
-                for key in value.keys {
-                    if let dictionary = value[key] as? [String: AnyObject] {
-                        if dictionary["owner"] as? String == uid {
-                            let lesson = Lesson(dictionary: dictionary, id: key)
-                            
-                            guard let chapter = lesson.chapter else { return }
-                            
-                            if Int(chapter)! < self.min {
-                                self.min = Int(chapter)!
-                            }
-                            
-                            if Int(chapter)! > self.max {
-                                self.max = Int(chapter)!
-                            }
-                            
-                            switch Int(chapter)! {
-                            case 3:
-                                self.chapter3.append(lesson)
-                                self.attemptReloadOfTable()
-                            case 4:
-                                self.chapter4.append(lesson)
-                                self.attemptReloadOfTable()
-                            default:
-                                return
-                            }
+        ref.observe(.childAdded) { snapshort in
+            let lessonId = snapshort.key
+            ref.child(lessonId).observeSingleEvent(of: .value) { snap in
+                if let dictionary = snap.value as? [String: AnyObject] {
+                    if dictionary["owner"] as? String == uid {
+                        let lesson = Lesson(dictionary: dictionary, id: lessonId)
+                        
+                        guard let chapter = lesson.chapter else { return }
+                        
+                        if Int(chapter)! < self.min {
+                            self.min = Int(chapter)!
+                        }
+                        
+                        if Int(chapter)! > self.max {
+                            self.max = Int(chapter)!
+                        }
+                        
+                        switch Int(chapter)! {
+                        case 3:
+                            self.chaptersDictionary3[lessonId] = lesson
+                            self.attemptReloadOfTable()
+                        case 4:
+                            self.chaptersDictionary4[lessonId] = lesson
+                            self.attemptReloadOfTable()
+                        default:
+                            return
                         }
                     }
                 }
@@ -177,6 +177,10 @@ class SubjectSemester2: UIViewController {
     }
     
     @objc func handleReloadTable() {
+        self.chapter3 = Array(self.chaptersDictionary3.values)
+        
+        self.chapter4 = Array(self.chaptersDictionary4.values)
+        
         self.chapter3.sort { num1, num2 in
             return Int(num1.number!)! < Int(num2.number!)!
         }

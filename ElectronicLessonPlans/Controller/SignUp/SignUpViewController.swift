@@ -32,9 +32,9 @@ class SignUpViewController: UIViewController {
         let tf = UITextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.placeholder = "Họ và tên"
-//        textField.keyboardType = .numberPad
         tf.borderStyle = .none
         tf.font = UIFont.systemFont(ofSize: 18)
+        tf.autocorrectionType = .no
         return tf
     }()
     
@@ -63,6 +63,7 @@ class SignUpViewController: UIViewController {
 //        textField.keyboardType = .numberPad
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -73,6 +74,7 @@ class SignUpViewController: UIViewController {
         textField.isSecureTextEntry = true
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -83,6 +85,7 @@ class SignUpViewController: UIViewController {
         textField.isSecureTextEntry = true
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 18)
+        textField.autocorrectionType = .no
         return textField
     }()
     
@@ -196,30 +199,60 @@ class SignUpViewController: UIViewController {
         return image
     }()
     
+    let errorNameLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Họ và tên không được bỏ trống"
+        return label
+    }()
+    
+    let errorDOBLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Ngày sinh không được bỏ trống"
+        return label
+    }()
+    
+    let errorEmailLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Email không được bỏ trống"
+        return label
+    }()
+    
+    let errorPasswordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Mật khẩu không được bỏ trống"
+        return label
+    }()
+    
+    let errorRePasswordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .red
+        label.font = UIFont.italicSystemFont(ofSize: 13)
+        label.textAlignment = .left
+        label.text = "Xác nhận mật khẩu không được bỏ trống"
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.overrideUserInterfaceStyle = .light
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = CGRect(x: 0, y: 0, width: view.bounds.width + 100, height: view.bounds.height + 100)
-        gradientLayer.colors = [#colorLiteral(red: 0.974270761, green: 0.9642215371, blue: 0.9773648381, alpha: 1).cgColor, #colorLiteral(red: 0.8661997318, green: 0.8461599946, blue: 0.8638817668, alpha: 1).cgColor]
-        gradientLayer.shouldRasterize = true
-        containerView.layer.addSublayer(gradientLayer)
-        
         setupLayout()
-        
-        underlineTextField(subView: nameView)
-        underlineTextField(subView: dobView)
-        underlineTextField(subView: phoneView)
-        underlineTextField(subView: passwordView)
-        underlineTextField(subView: rePasswordView)
-                
-        loginLabel.isUserInteractionEnabled = true
-        let labelTapGesture = UITapGestureRecognizer(target: self, action: #selector(onPressLoginLabel))
-        loginLabel.addGestureRecognizer(labelTapGesture)
-        
-        signUpButton.addTarget(self, action: #selector(onPressSignUp), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -228,6 +261,14 @@ class SignUpViewController: UIViewController {
     }
     
     func setupLayout() {
+        self.overrideUserInterfaceStyle = .light
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: view.bounds.width + 100, height: view.bounds.height + 100)
+        gradientLayer.colors = [#colorLiteral(red: 0.974270761, green: 0.9642215371, blue: 0.9773648381, alpha: 1).cgColor, #colorLiteral(red: 0.8661997318, green: 0.8461599946, blue: 0.8638817668, alpha: 1).cgColor]
+        gradientLayer.shouldRasterize = true
+        containerView.layer.addSublayer(gradientLayer)
+        
         self.view.addSubview(containerView)
         containerView.addSubview(logoImage)
         containerView.addSubview(stackView)
@@ -255,6 +296,11 @@ class SignUpViewController: UIViewController {
         
         containerView.addSubview(signUpButton)
         containerView.addSubview(loginLabel)
+        containerView.addSubview(errorNameLabel)
+        containerView.addSubview(errorDOBLabel)
+        containerView.addSubview(errorEmailLabel)
+        containerView.addSubview(errorPasswordLabel)
+        containerView.addSubview(errorRePasswordLabel)
         
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -334,8 +380,51 @@ class SignUpViewController: UIViewController {
         loginLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
         loginLabel.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
         
+        errorNameLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorNameLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorNameLabel.topAnchor.constraint(equalTo: nameTextField.bottomAnchor).isActive = true
+        errorNameLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        errorDOBLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorDOBLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorDOBLabel.topAnchor.constraint(equalTo: dobTextField.bottomAnchor).isActive = true
+        errorDOBLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        errorEmailLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorEmailLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorEmailLabel.topAnchor.constraint(equalTo: phoneTextField.bottomAnchor).isActive = true
+        errorEmailLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        errorPasswordLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorPasswordLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorPasswordLabel.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor).isActive = true
+        errorPasswordLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        errorRePasswordLabel.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.85).isActive = true
+        errorRePasswordLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        errorRePasswordLabel.topAnchor.constraint(equalTo: rePasswordTextField.bottomAnchor).isActive = true
+        errorRePasswordLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
         dobTextField.inputView = dobPicker
         dobTextField.inputAccessoryView = createToolbar()
+        
+        underlineTextField(subView: nameView)
+        underlineTextField(subView: dobView)
+        underlineTextField(subView: phoneView)
+        underlineTextField(subView: passwordView)
+        underlineTextField(subView: rePasswordView)
+        
+        errorNameLabel.isHidden = true
+        errorDOBLabel.isHidden = true
+        errorEmailLabel.isHidden = true
+        errorPasswordLabel.isHidden = true
+        errorRePasswordLabel.isHidden = true
+                
+        loginLabel.isUserInteractionEnabled = true
+        let labelTapGesture = UITapGestureRecognizer(target: self, action: #selector(onPressLoginLabel))
+        loginLabel.addGestureRecognizer(labelTapGesture)
+        
+        signUpButton.addTarget(self, action: #selector(onPressSignUp), for: .touchUpInside)
     }
     
     @objc func onPressLoginLabel() {
@@ -343,12 +432,22 @@ class SignUpViewController: UIViewController {
     }
     
     @objc func onPressSignUp() {
-        ProgressHUD.show()
+        errorNameLabel.isHidden = true
+        errorDOBLabel.isHidden = true
+        errorEmailLabel.isHidden = true
+        errorPasswordLabel.isHidden = true
+        errorRePasswordLabel.isHidden = true
+        
         guard let name = nameTextField.text, let dob = dobTextField.text, let email = phoneTextField.text, let password = passwordTextField.text, let repassword = rePasswordTextField.text else { return }
 
-        if password == repassword {
+        if isValidation(name: name, dob: dob, email: email, password: password, rePassword: repassword) {
+            ProgressHUD.show()
             Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
                 if error != nil {
+                    let alert = UIAlertController(title: "Thông báo", message: "Email không đúng định dạng hoặc đã tồn tại", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                    ProgressHUD.dismiss()
                     print(error!)
                     return
                 }
@@ -365,6 +464,39 @@ class SignUpViewController: UIViewController {
                 ProgressHUD.dismiss()
             }
         }
+    }
+    
+    func isValidation(name: String, dob: String, email: String, password: String, rePassword: String) -> Bool {
+        if !name.isEmpty && !dob.isEmpty && !email.isEmpty && !password.isEmpty && !rePassword.isEmpty && password == rePassword {
+            return true
+        }
+        
+        if name.isEmpty {
+            errorNameLabel.isHidden = false
+        }
+        
+        if dob.isEmpty {
+            errorDOBLabel.isHidden = false
+        }
+        
+        if email.isEmpty {
+            errorEmailLabel.isHidden = false
+        }
+        
+        if password.isEmpty {
+            errorPasswordLabel.isHidden = false
+        }
+        
+        if password != rePassword {
+            errorRePasswordLabel.isHidden = false
+            errorRePasswordLabel.text = "Mật khẩu không khớp"
+        }
+        
+        if rePassword.isEmpty {
+            errorRePasswordLabel.isHidden = false
+        }
+        
+        return false
     }
     
     func underlineTextField(subView: UIView) {

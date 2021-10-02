@@ -11,6 +11,9 @@
 		1820F43E26A0834C00437BAC /* PerInforViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1820F43D26A0834C00437BAC /* PerInforViewController.swift */; };
 		183E78C826A31C0000FF12F5 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183E78C726A31C0000FF12F5 /* ContactViewController.swift */; };
 		183E78CA26A31C0F00FF12F5 /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183E78C926A31C0F00FF12F5 /* MessageViewController.swift */; };
+		1848CABE2706F48F00DAA87B /* SlideMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1848CABD2706F48F00DAA87B /* SlideMenuController.swift */; };
+		1848CAC02706F54300DAA87B /* SlideMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1848CABF2706F54300DAA87B /* SlideMenuViewController.swift */; };
+		1848CAC22706F5C900DAA87B /* MenuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1848CAC12706F5C900DAA87B /* MenuCell.swift */; };
 		184B83BF26F7301700A70240 /* ForgotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184B83BE26F7301700A70240 /* ForgotViewController.swift */; };
 		184C0452269C5F360071C0A3 /* LessonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C0450269C5F360071C0A3 /* LessonViewController.swift */; };
 		184C0453269C5F360071C0A3 /* LessonViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 184C0451269C5F360071C0A3 /* LessonViewController.xib */; };
@@ -69,6 +72,9 @@
 		1820F43D26A0834C00437BAC /* PerInforViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerInforViewController.swift; sourceTree = "<group>"; };
 		183E78C726A31C0000FF12F5 /* ContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		183E78C926A31C0F00FF12F5 /* MessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewController.swift; sourceTree = "<group>"; };
+		1848CABD2706F48F00DAA87B /* SlideMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideMenuController.swift; sourceTree = "<group>"; };
+		1848CABF2706F54300DAA87B /* SlideMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideMenuViewController.swift; sourceTree = "<group>"; };
+		1848CAC12706F5C900DAA87B /* MenuCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuCell.swift; sourceTree = "<group>"; };
 		184B83BE26F7301700A70240 /* ForgotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotViewController.swift; sourceTree = "<group>"; };
 		184C0450269C5F360071C0A3 /* LessonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonViewController.swift; sourceTree = "<group>"; };
 		184C0451269C5F360071C0A3 /* LessonViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LessonViewController.xib; sourceTree = "<group>"; };
@@ -126,6 +132,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1848CABC2706F48F00DAA87B /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1848CABD2706F48F00DAA87B /* SlideMenuController.swift */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		1848CAC32707025B00DAA87B /* SlideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				1848CAC12706F5C900DAA87B /* MenuCell.swift */,
+				1848CABF2706F54300DAA87B /* SlideMenuViewController.swift */,
+			);
+			path = SlideMenu;
+			sourceTree = "<group>";
+		};
 		184C044F269C5EEC0071C0A3 /* Lesson */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +235,7 @@
 			isa = PBXGroup;
 			children = (
 				1898A85426C8F4D700E1BCC2 /* ElectronicLessonPlans.entitlements */,
+				1848CABC2706F48F00DAA87B /* Libraries */,
 				18C0969126E8FD150059070B /* Extensions */,
 				18BE8F3A26C57E90006C135D /* Helpers */,
 				18E128C726C24D2E001269DB /* Model */,
@@ -233,6 +257,7 @@
 			children = (
 				1820F43B26A0714400437BAC /* SplashViewController.swift */,
 				1887EF3726847A01004C8A4C /* LoginViewController.swift */,
+				1848CAC32707025B00DAA87B /* SlideMenu */,
 				18FF965226F82EB50069BFF7 /* ForgotPassword */,
 				1864FF5C2699B02200E3F734 /* SignUp */,
 				18E2751726A41D8B007187D5 /* Personal Infomation */,
@@ -445,6 +470,7 @@
 			files = (
 				18EFFFBB26F78E3B003E3AAC /* ChangePasswordViewController.swift in Sources */,
 				18E2751B26A41F51007187D5 /* EditViewController.swift in Sources */,
+				1848CAC22706F5C900DAA87B /* MenuCell.swift in Sources */,
 				18B30DF8269D2387004B2C0A /* DetailLessonData.swift in Sources */,
 				1884E0892699CEAA00FFB07E /* SubjectCell.swift in Sources */,
 				18EFFFB926F77F3D003E3AAC /* ConfirmViewController.swift in Sources */,
@@ -465,8 +491,10 @@
 				1887EF26268472A5004C8A4C /* SceneDelegate.swift in Sources */,
 				18E128C926C24D47001269DB /* User.swift in Sources */,
 				18C7EF3D26C4D8D400AE664C /* ChatMessageCell.swift in Sources */,
+				1848CABE2706F48F00DAA87B /* SlideMenuController.swift in Sources */,
 				18FD56C626BE8B8900FE2A3F /* CardCollectionViewCell.swift in Sources */,
 				1887EF3D26848527004C8A4C /* SignUpViewController.swift in Sources */,
+				1848CAC02706F54300DAA87B /* SlideMenuViewController.swift in Sources */,
 				1887EF4126848853004C8A4C /* MainScreenViewController.swift in Sources */,
 				18E128CD26C28B56001269DB /* Message.swift in Sources */,
 				1858ACD826EA041100BA015C /* UIView+Extension.swift in Sources */,

@@ -23,19 +23,6 @@ class MessageViewController: UIViewController {
         return table
     }()
     
-    let menuView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    let menuTableView: UITableView = {
-        let table = UITableView()
-        table.translatesAutoresizingMaskIntoConstraints = false
-        table.backgroundColor = .blueInLogo
-        return table
-    }()
-        
     var messages = [Message]()
     var messagesDictionary = [String: Message]()
     
@@ -43,15 +30,9 @@ class MessageViewController: UIViewController {
     
     var timer: Timer?
     
-    lazy var slideInMenuPadding: CGFloat = view.frame.width * 1/2
-    
-    var isSlideInMenuPresented = false
-    
-    let titleInMenu = ["Thông tin cá nhân", "Giáo viên chủ nhiệm", "Giáo viên bộ môn", "Đăng xuất"]
-
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         setupLayout()
         
         observeUserMessages()
@@ -61,6 +42,7 @@ class MessageViewController: UIViewController {
         super.viewWillAppear(animated)
         
         self.tabBarController?.tabBar.isHidden = false
+        tabBarController?.navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Tin nhắn"
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
@@ -73,27 +55,17 @@ class MessageViewController: UIViewController {
     }
     
     func  setupLayout() {
-//        self.overrideUserInterfaceStyle = .light
-//        self.tabBarController?.overrideUserInterfaceStyle = .light
-        
-//        navigationController?.navigationBar.barStyle = .black
-        
+        self.overrideUserInterfaceStyle = .light
+        self.tabBarController?.overrideUserInterfaceStyle = .light
+                
         let addButton = UIBarButtonItem(image: UIImage(systemName: "square.and.pencil"), style: .plain, target: self, action: #selector(onPressAdd))
         navigationItem.rightBarButtonItem = addButton
         
-        let menuButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(tappedMenu))
-        navigationItem.setLeftBarButton(menuButton, animated: false)
+        self.addLeftBarButtonWithImage(UIImage(named: "menu")!)
         
-        menuView.pinMenuTo(view, with: slideInMenuPadding)
         containerView.edgeTo(view)
         
         containerView.addSubview(tableView)
-        
-        menuView.addSubview(menuTableView)
-        menuTableView.topAnchor.constraint(equalTo: menuView.topAnchor).isActive = true
-        menuTableView.bottomAnchor.constraint(equalTo: menuView.bottomAnchor).isActive = true
-        menuTableView.leadingAnchor.constraint(equalTo: menuView.leadingAnchor).isActive = true
-        menuTableView.trailingAnchor.constraint(equalTo: menuView.trailingAnchor).isActive = true
         
         containerView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
@@ -109,10 +81,6 @@ class MessageViewController: UIViewController {
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
         
-        menuTableView.delegate = self
-        menuTableView.dataSource = self
-        menuTableView.alwaysBounceVertical = false
-        
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
     
@@ -120,27 +88,11 @@ class MessageViewController: UIViewController {
         let newMessageVC = NewMessageViewController()
         newMessageVC.messageC = self
         let navigationC = UINavigationController(rootViewController: newMessageVC)
-//        navigationC.modalPresentationStyle = .fullScreen
+        //        navigationC.modalPresentationStyle = .fullScreen
         self.present(navigationC, animated: true, completion: nil)
     }
     
-    @objc func tappedMenu() {
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: .curveEaseInOut) {
-            self.containerView.frame.origin.x = self.isSlideInMenuPresented ? 0 : self.containerView.frame.width - self.slideInMenuPadding
-            self.tabBarController?.tabBar.frame.origin.x = self.containerView.frame.origin.x
-//            self.navigationController?.navigationBar.frame.origin.x = self.containerView.frame.origin.x
-        } completion: { finished in
-            self.isSlideInMenuPresented.toggle()
-        }
-    }
-    
     func showChatController(user: User) {
-//        messages.removeAll()
-//        messagesDictionary.removeAll()
-//        tableView.reloadData()
-        
-//        observeUserMessages()
-        
         let chatLogC = ChatLogController()
         chatLogC.user = user
         navigationController?.pushViewController(chatLogC, animated: true)
@@ -196,9 +148,9 @@ class MessageViewController: UIViewController {
         }, withCancel: nil)
     }
     
-//    override var preferredStatusBarStyle: UIStatusBarStyle {
-//        return .lightContent
-//    }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 }
 
 extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
@@ -207,16 +159,10 @@ extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tableView == self.tableView {
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
-            let message = messages[indexPath.row]
-            cell.message = message
-            return cell
-        } else {
-            let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
-            cell.textLabel?.text = titleInMenu[indexPath.row]
-            return cell
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
+        let message = messages[indexPath.row]
+        cell.message = message
+        return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -235,41 +181,21 @@ extension MessageViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView == self.tableView {
-            let message = messages[indexPath.row]
-            guard let chatPartnerId = message.chatPartnerId() else { return }
-            let ref = Database.database().reference().child("Users").child(chatPartnerId)
-            ref.observeSingleEvent(of: .value, with: { snapshort in
-                guard let dictionary = snapshort.value as? [String: AnyObject] else {
-                    return
-                }
-                let user = User()
-                user.id = chatPartnerId
-//              user.setValuesForKeys(dictionary)
-                user.name = dictionary["name"] as? String
-                user.email = dictionary["email"] as? String
-                user.password = dictionary["password"] as? String
-                user.dateOfBirth = dictionary["dob"] as? String
-                user.profileImageURL = dictionary["profileImage"] as? String
-                self.showChatController(user: user)
-            }, withCancel: nil)
-        } else {
-            switch indexPath.row {
-            case 0:
-                let perInfoVC = UINavigationController(rootViewController: PerInforViewController())
-                perInfoVC.modalPresentationStyle = .fullScreen
-                self.present(perInfoVC, animated: true, completion: nil)
-            case 1:
-                break
-            case 2:
-                let mainVC = UINavigationController(rootViewController: MainScreenViewController())
-                mainVC.modalPresentationStyle = .fullScreen
-                self.present(mainVC, animated: true, completion:  nil)
-            case 3:
-                self.dismiss(animated: true, completion: nil)
-            default:
-                break
+        let message = messages[indexPath.row]
+        guard let chatPartnerId = message.chatPartnerId() else { return }
+        let ref = Database.database().reference().child("Users").child(chatPartnerId)
+        ref.observeSingleEvent(of: .value, with: { snapshort in
+            guard let dictionary = snapshort.value as? [String: AnyObject] else {
+                return
             }
-        }
+            let user = User()
+            user.id = chatPartnerId
+            user.name = dictionary["name"] as? String
+            user.email = dictionary["email"] as? String
+            user.password = dictionary["password"] as? String
+            user.dateOfBirth = dictionary["dob"] as? String
+            user.profileImageURL = dictionary["profileImage"] as? String
+            self.showChatController(user: user)
+        }, withCancel: nil)
     }
 }

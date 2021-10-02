@@ -29,6 +29,11 @@ class SubjectSemester1: UIViewController {
     var chapter1 = [Lesson]()
     var chapter2 = [Lesson]()
 //    var chapters = [[Lesson]()]
+//    chapters = [chapter1, chapter2]
+//    chapter[0][1]
+    
+    var chaptersDictionary1 = [String: Lesson]()
+    var chaptersDictionary2 = [String: Lesson]()
     
     var max = Int.min
     var min = Int.max
@@ -88,7 +93,7 @@ class SubjectSemester1: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-//        UITableViewHeaderFooterView.appearance().tintColor = .lightGray
+
         tableView.tableFooterView = UIView()
         
         tableView.register(SubjectCell.self, forCellReuseIdentifier: "cell")
@@ -124,6 +129,7 @@ class SubjectSemester1: UIViewController {
             let values2 = ["general": "Không có", "activityOfTeacher": "Không có", "activityOfStudent": "Không có", "note": "Không có", "owner": childRefLesson.key]
             
             childRefDetailLesson.updateChildValues(values2 as [String: Any])
+            self.fetchLessons()
         }
         
         let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
@@ -134,7 +140,7 @@ class SubjectSemester1: UIViewController {
         
         alert.preferredAction = submitAction
         present(alert, animated: true) {
-            self.fetchLessons()
+//            self.fetchLessons()
         }
     }
     
@@ -146,34 +152,32 @@ class SubjectSemester1: UIViewController {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let ref = Database.database().reference().child("Lessons").child("Semester1").child(self.navigationItem.title!)
 
-        ref.observe(.value) { snapshort in
-
-            if let value = snapshort.value as? [String: Any] {
-                for key in value.keys {
-                    if let dictionary = value[key] as? [String: AnyObject] {
-                        if dictionary["owner"] as? String == uid {
-                            let lesson = Lesson(dictionary: dictionary, id: key)
-                            
-                            guard let chapter = lesson.chapter else { return }
-                            
-                            if Int(chapter)! < self.min {
-                                self.min = Int(chapter)!
-                            }
-                            
-                            if Int(chapter)! > self.max {
-                                self.max = Int(chapter)!
-                            }
-                            
-                            switch Int(chapter)! {
-                            case 1:
-                                self.chapter1.append(lesson)
-                                self.attemptReloadOfTable()
-                            case 2:
-                                self.chapter2.append(lesson)
-                                self.attemptReloadOfTable()
-                            default:
-                                return
-                            }
+        ref.observe(.childAdded) { snapshort in
+            let lessonId = snapshort.key
+            ref.child(lessonId).observeSingleEvent(of: .value) { snap in
+                if let dictionary = snap.value as? [String: AnyObject] {
+                    if dictionary["owner"] as? String == uid {
+                        let lesson = Lesson(dictionary: dictionary, id: lessonId)
+                        
+                        guard let chapter = lesson.chapter else { return }
+                        
+                        if Int(chapter)! < self.min {
+                            self.min = Int(chapter)!
+                        }
+                        
+                        if Int(chapter)! > self.max {
+                            self.max = Int(chapter)!
+                        }
+                        
+                        switch Int(chapter)! {
+                        case 1:
+                            self.chaptersDictionary1[lessonId] = lesson
+                            self.attemptReloadOfTable()
+                        case 2:
+                            self.chaptersDictionary2[lessonId] = lesson
+                            self.attemptReloadOfTable()
+                        default:
+                            return
                         }
                     }
                 }
@@ -187,6 +191,10 @@ class SubjectSemester1: UIViewController {
     }
     
     @objc func handleReloadTable() {
+        self.chapter1 = Array(self.chaptersDictionary1.values)
+        
+        self.chapter2 = Array(self.chaptersDictionary2.values)
+        
         self.chapter1.sort { num1, num2 in
             return Int(num1.number!)! < Int(num2.number!)!
         }
@@ -197,6 +205,17 @@ class SubjectSemester1: UIViewController {
         
 //        self.chapters.append(self.chapter1)
 //        self.chapters.append(self.chapter2)
+//
+//        print("số phần tử của chapters")
+//        print(chapters.count)
+//        for i in 0..<chapters.count {
+//            print("các phần tử của chapters theo index")
+//            print(chapters[i])
+//            for j in 0..<chapters[i].count {
+//                print("các phần tử của chapters[i][j]")
+//                print(chapters[i][j].title)
+//            }
+//        }
         
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -260,5 +279,22 @@ extension SubjectSemester1: UITableViewDelegate, UITableViewDataSource {
             return
         }
         
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .normal, title: "Delete") { action, view, closure in
+            
+            self.tableView.reloadData()
+        }
+        deleteAction.backgroundColor = .red
+        
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { action, view, closure in
+            
+        }
+        editAction.backgroundColor = .blue
+        
+        let actionConfig = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        
+        return actionConfig
     }
 }

@@ -14,5 +14,6 @@ target 'ElectronicLessonPlans' do
   pod 'ProgressHUD'
   # pod 'Toast-Swift'
   pod 'IQKeyboardManagerSwift'
+  pod "SideMenu"
 
 end
