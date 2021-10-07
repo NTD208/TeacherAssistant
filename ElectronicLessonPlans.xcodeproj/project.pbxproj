@@ -21,8 +21,6 @@
 		1858ACD826EA041100BA015C /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1858ACD726EA041100BA015C /* UIView+Extension.swift */; };
 		1858ACDA26EA065C00BA015C /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1858ACD926EA065C00BA015C /* UIColor+Extension.swift */; };
 		1864FF4B269979F200E3F734 /* Subject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1864FF4A269979F100E3F734 /* Subject.swift */; };
-		1864FF542699A35A00E3F734 /* SubjectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1864FF522699A35A00E3F734 /* SubjectViewController.swift */; };
-		1864FF552699A35A00E3F734 /* SubjectViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1864FF532699A35A00E3F734 /* SubjectViewController.xib */; };
 		1884E0892699CEAA00FFB07E /* SubjectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1884E0872699CEAA00FFB07E /* SubjectCell.swift */; };
 		1884E08A2699CEAA00FFB07E /* SubjectCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1884E0882699CEAA00FFB07E /* SubjectCell.xib */; };
 		1887EF24268472A5004C8A4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1887EF23268472A5004C8A4C /* AppDelegate.swift */; };
@@ -50,6 +48,9 @@
 		18E2751B26A41F51007187D5 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E2751A26A41F51007187D5 /* EditViewController.swift */; };
 		18EFFFB926F77F3D003E3AAC /* ConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFFFB826F77F3D003E3AAC /* ConfirmViewController.swift */; };
 		18EFFFBB26F78E3B003E3AAC /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFFFBA26F78E3B003E3AAC /* ChangePasswordViewController.swift */; };
+		18F4E60D270B30E300EB3B0C /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F4E60A270B30E300EB3B0C /* CloseButton.swift */; };
+		18F4E60E270B30E300EB3B0C /* TagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F4E60B270B30E300EB3B0C /* TagView.swift */; };
+		18F4E60F270B30E300EB3B0C /* TagListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F4E60C270B30E300EB3B0C /* TagListView.swift */; };
 		18FD56C626BE8B8900FE2A3F /* CardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FD56C526BE8B8900FE2A3F /* CardCollectionViewCell.swift */; };
 		BAF80C32526EEF264BBA6933 /* Pods_ElectronicLessonPlans.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF1E1F76C9A5AFB619B482A /* Pods_ElectronicLessonPlans.framework */; };
 /* End PBXBuildFile section */
@@ -82,8 +83,6 @@
 		1858ACD726EA041100BA015C /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		1858ACD926EA065C00BA015C /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		1864FF4A269979F100E3F734 /* Subject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subject.swift; sourceTree = "<group>"; };
-		1864FF522699A35A00E3F734 /* SubjectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectViewController.swift; sourceTree = "<group>"; };
-		1864FF532699A35A00E3F734 /* SubjectViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubjectViewController.xib; sourceTree = "<group>"; };
 		1884E0872699CEAA00FFB07E /* SubjectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectCell.swift; sourceTree = "<group>"; };
 		1884E0882699CEAA00FFB07E /* SubjectCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubjectCell.xib; sourceTree = "<group>"; };
 		1887EF20268472A5004C8A4C /* ElectronicLessonPlans.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ElectronicLessonPlans.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +113,10 @@
 		18E2751A26A41F51007187D5 /* EditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 		18EFFFB826F77F3D003E3AAC /* ConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmViewController.swift; sourceTree = "<group>"; };
 		18EFFFBA26F78E3B003E3AAC /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
+		18F4E609270B30E300EB3B0C /* TagListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagListView.h; sourceTree = "<group>"; };
+		18F4E60A270B30E300EB3B0C /* CloseButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
+		18F4E60B270B30E300EB3B0C /* TagView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagView.swift; sourceTree = "<group>"; };
+		18F4E60C270B30E300EB3B0C /* TagListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagListView.swift; sourceTree = "<group>"; };
 		18FD56C526BE8B8900FE2A3F /* CardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCollectionViewCell.swift; sourceTree = "<group>"; };
 		9006D2C5543172B5FA840E6F /* Pods-ElectronicLessonPlans.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElectronicLessonPlans.debug.xcconfig"; path = "Target Support Files/Pods-ElectronicLessonPlans/Pods-ElectronicLessonPlans.debug.xcconfig"; sourceTree = "<group>"; };
 		91202062ECAE0AC74AD2E764 /* Pods-ElectronicLessonPlans.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElectronicLessonPlans.release.xcconfig"; path = "Target Support Files/Pods-ElectronicLessonPlans/Pods-ElectronicLessonPlans.release.xcconfig"; sourceTree = "<group>"; };
@@ -135,7 +138,8 @@
 		1848CABC2706F48F00DAA87B /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				1848CABD2706F48F00DAA87B /* SlideMenuController.swift */,
+				18F4E608270B30E300EB3B0C /* TagListView */,
+				18F4E607270B30CB00EB3B0C /* SlideMenu */,
 			);
 			path = Libraries;
 			sourceTree = "<group>";
@@ -193,12 +197,10 @@
 		1864FF602699B0F100E3F734 /* Subject */ = {
 			isa = PBXGroup;
 			children = (
-				1864FF522699A35A00E3F734 /* SubjectViewController.swift */,
 				18C2496A26D3D4E4009D411A /* SubjectSemester1.swift */,
 				18C2496C26D3D4FD009D411A /* SubjectSemester2.swift */,
 				1884E0872699CEAA00FFB07E /* SubjectCell.swift */,
 				1884E0882699CEAA00FFB07E /* SubjectCell.xib */,
-				1864FF532699A35A00E3F734 /* SubjectViewController.xib */,
 			);
 			path = Subject;
 			sourceTree = "<group>";
@@ -321,6 +323,25 @@
 			path = "Head Teacher";
 			sourceTree = "<group>";
 		};
+		18F4E607270B30CB00EB3B0C /* SlideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				1848CABD2706F48F00DAA87B /* SlideMenuController.swift */,
+			);
+			path = SlideMenu;
+			sourceTree = "<group>";
+		};
+		18F4E608270B30E300EB3B0C /* TagListView */ = {
+			isa = PBXGroup;
+			children = (
+				18F4E609270B30E300EB3B0C /* TagListView.h */,
+				18F4E60A270B30E300EB3B0C /* CloseButton.swift */,
+				18F4E60B270B30E300EB3B0C /* TagView.swift */,
+				18F4E60C270B30E300EB3B0C /* TagListView.swift */,
+			);
+			path = TagListView;
+			sourceTree = "<group>";
+		};
 		18FF965226F82EB50069BFF7 /* ForgotPassword */ = {
 			isa = PBXGroup;
 			children = (
@@ -409,7 +430,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1887EF30268472A5004C8A4C /* LaunchScreen.storyboard in Resources */,
-				1864FF552699A35A00E3F734 /* SubjectViewController.xib in Resources */,
 				1887EF2D268472A5004C8A4C /* Assets.xcassets in Resources */,
 				184C0453269C5F360071C0A3 /* LessonViewController.xib in Resources */,
 				1887EF3E26848527004C8A4C /* SignUpViewController.xib in Resources */,
@@ -475,10 +495,11 @@
 				1884E0892699CEAA00FFB07E /* SubjectCell.swift in Sources */,
 				18EFFFB926F77F3D003E3AAC /* ConfirmViewController.swift in Sources */,
 				1864FF4B269979F200E3F734 /* Subject.swift in Sources */,
-				1864FF542699A35A00E3F734 /* SubjectViewController.swift in Sources */,
 				1887EF3826847A01004C8A4C /* LoginViewController.swift in Sources */,
 				18B30DFA269D2A37004B2C0A /* AccountData.swift in Sources */,
+				18F4E60F270B30E300EB3B0C /* TagListView.swift in Sources */,
 				18508F5B269C362C00BF8086 /* Lesson.swift in Sources */,
+				18F4E60D270B30E300EB3B0C /* CloseButton.swift in Sources */,
 				18E128C626C24577001269DB /* NewMessageViewController.swift in Sources */,
 				183E78CA26A31C0F00FF12F5 /* MessageViewController.swift in Sources */,
 				184C0452269C5F360071C0A3 /* LessonViewController.swift in Sources */,
@@ -486,6 +507,7 @@
 				1858ACDA26EA065C00BA015C /* UIColor+Extension.swift in Sources */,
 				1820F43E26A0834C00437BAC /* PerInforViewController.swift in Sources */,
 				1887EF24268472A5004C8A4C /* AppDelegate.swift in Sources */,
+				18F4E60E270B30E300EB3B0C /* TagView.swift in Sources */,
 				18C2496D26D3D4FD009D411A /* SubjectSemester2.swift in Sources */,
 				183E78C826A31C0000FF12F5 /* ContactViewController.swift in Sources */,
 				1887EF26268472A5004C8A4C /* SceneDelegate.swift in Sources */,

@@ -34,7 +34,6 @@ class ContactViewController: UIViewController {
         super.viewWillAppear(animated)
         
         tabBarController?.tabBar.backgroundColor = .tabBarColor
-        tabBarController?.navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Danh bạ"
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
@@ -76,10 +75,6 @@ class ContactViewController: UIViewController {
     
     @objc func onPressAdd() {
         
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
     }
 }
 

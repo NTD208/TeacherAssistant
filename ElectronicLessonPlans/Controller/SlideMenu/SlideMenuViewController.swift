@@ -30,6 +30,8 @@ class SlideMenuViewController: UIViewController {
     
     let titleInMenu = ["Thông tin cá nhân", "Giáo viên chủ nhiệm", "Giáo viên bộ môn", "Đăng xuất"]
     
+    var selectedIndex = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,12 +52,11 @@ class SlideMenuViewController: UIViewController {
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .blueInLogo
+        tableView.bounces = false
+        tableView.separatorStyle = .singleLine
+        tableView.separatorColor = .blueInLogo
         
-        tableView.register(MenuCell.self, forCellReuseIdentifier: "MenuCell")
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MenuCell")
     }
 }
 
@@ -65,12 +66,12 @@ extension SlideMenuViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MenuCell", for: indexPath) as! MenuCell
-        cell.myTitle.text = titleInMenu[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MenuCell", for: indexPath)
+        cell.textLabel?.text = titleInMenu[indexPath.row]
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {        
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {                
         switch indexPath.row {
         case 0:
             slideMenuController()?.changeMainViewController(UINavigationController(rootViewController: PerInforViewController()), close: true)

@@ -89,10 +89,6 @@ class NewMessageViewController: UIViewController {
             }
         }
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
 }
 extension NewMessageViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

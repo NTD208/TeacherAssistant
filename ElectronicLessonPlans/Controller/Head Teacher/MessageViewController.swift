@@ -42,7 +42,6 @@ class MessageViewController: UIViewController {
         super.viewWillAppear(animated)
         
         self.tabBarController?.tabBar.isHidden = false
-        tabBarController?.navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Tin nhắn"
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
@@ -146,10 +145,6 @@ class MessageViewController: UIViewController {
                 self.attemptReloadOfTable()
             }
         }, withCancel: nil)
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
     }
 }
 

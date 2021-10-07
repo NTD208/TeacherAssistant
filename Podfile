@@ -15,5 +15,6 @@ target 'ElectronicLessonPlans' do
   # pod 'Toast-Swift'
   pod 'IQKeyboardManagerSwift'
   pod "SideMenu"
+  pod 'TagListView'
 
 end

@@ -163,10 +163,6 @@ class MainScreenViewController: UIViewController {
             self.collectionView.reloadData()
         }
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
 }
 
 extension MainScreenViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -181,10 +177,6 @@ extension MainScreenViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.subject = subject
         return cell
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//        myPage.currentPage = indexPath.row
-//    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let tabC = UITabBarController()
@@ -211,9 +203,5 @@ extension MainScreenViewController: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 20
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
     }
 }

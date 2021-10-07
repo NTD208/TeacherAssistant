@@ -25,19 +25,12 @@ class SubjectSemester1: UIViewController {
     
     let uid = Auth.auth().currentUser?.uid
     
-//    var lessons = [Lesson]()
     var chapter1 = [Lesson]()
     var chapter2 = [Lesson]()
-//    var chapters = [[Lesson]()]
-//    chapters = [chapter1, chapter2]
-//    chapter[0][1]
-    
     var chaptersDictionary1 = [String: Lesson]()
     var chaptersDictionary2 = [String: Lesson]()
-    
     var max = Int.min
     var min = Int.max
-    
     var timer: Timer!
     
     var subject:Subject? {
@@ -61,7 +54,6 @@ class SubjectSemester1: UIViewController {
         tabBarController?.tabBar.isHidden = false
         tabBarController?.tabBar.backgroundColor = .tabBarColor
         
-        navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -75,8 +67,6 @@ class SubjectSemester1: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.navigationBar.barStyle = .black
-        
-        SubjectSemester2().maxInSemester1 = max
     }
     
     func setupLayout() {
@@ -87,7 +77,7 @@ class SubjectSemester1: UIViewController {
         
         containerView.frame = self.view.bounds
         tableView.frame = containerView.bounds
-        
+                
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleAdd))
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .done, target: self, action: #selector(handleBack))
         
@@ -139,9 +129,7 @@ class SubjectSemester1: UIViewController {
         alert.addAction(cancelAction)
         
         alert.preferredAction = submitAction
-        present(alert, animated: true) {
-//            self.fetchLessons()
-        }
+        present(alert, animated: true)
     }
     
     @objc func handleBack() {
@@ -202,20 +190,6 @@ class SubjectSemester1: UIViewController {
         self.chapter2.sort { num1, num2 in
             return Int(num1.number!)! < Int(num2.number!)!
         }
-        
-//        self.chapters.append(self.chapter1)
-//        self.chapters.append(self.chapter2)
-//
-//        print("số phần tử của chapters")
-//        print(chapters.count)
-//        for i in 0..<chapters.count {
-//            print("các phần tử của chapters theo index")
-//            print(chapters[i])
-//            for j in 0..<chapters[i].count {
-//                print("các phần tử của chapters[i][j]")
-//                print(chapters[i][j].title)
-//            }
-//        }
         
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -282,14 +256,67 @@ extension SubjectSemester1: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .normal, title: "Delete") { action, view, closure in
-            
-            self.tableView.reloadData()
+        let deleteAction = UIContextualAction(style: .normal, title: "Delete") {[self] action, view, closure in
+            switch indexPath.section {
+            case 0:
+                Database.database().reference().child("Lessons").child("Semester1").child(self.navigationItem.title!).child("\(chapter1[indexPath.row].uid!)").removeValue()
+                chapter1.remove(at: indexPath.row)
+                self.fetchLessons()
+            case 1:
+                Database.database().reference().child("Lessons").child("Semester1").child(self.navigationItem.title!).child("\(chapter2[indexPath.row].uid!)").removeValue()
+                chapter2.remove(at: indexPath.row)
+                self.fetchLessons()
+            default:
+                break
+            }
         }
         deleteAction.backgroundColor = .red
         
-        let editAction = UIContextualAction(style: .normal, title: "Edit") { action, view, closure in
-            
+        let editAction = UIContextualAction(style: .normal, title: "Edit") {[self] action, view, closure in
+            switch indexPath.section {
+            case 0:
+                let alert = UIAlertController(title: "Bài \(chapter1[indexPath.row].number!)", message: "", preferredStyle: .alert)
+                alert.addTextField { tf in
+                    tf.text = chapter1[indexPath.row].title
+                }
+                
+                let submitAction = UIAlertAction(title: "Xong", style: .default) { _ in
+                    let answer = alert.textFields?.first?.text
+                    Database.database().reference().child("Lessons").child("Semester1").child(self.navigationItem.title!).child("\(chapter1[indexPath.row].uid!)").updateChildValues(["chapter": "\(chapter1[indexPath.row].chapter!)", "number": "\(chapter1[indexPath.row].number!)", "title": answer!, "owner": uid!])
+                    self.fetchLessons()
+                }
+                
+                let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
+                cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+                
+                alert.addAction(submitAction)
+                alert.addAction(cancelAction)
+                alert.preferredAction = submitAction
+                
+                present(alert, animated: true, completion: nil)
+            case 1:
+                let alert = UIAlertController(title: "Bài \(chapter2[indexPath.row].number!)", message: "", preferredStyle: .alert)
+                alert.addTextField { tf in
+                    tf.text = chapter2[indexPath.row].title
+                }
+                
+                let submitAction = UIAlertAction(title: "Xong", style: .default) { _ in
+                    let answer = alert.textFields?.first?.text
+                    Database.database().reference().child("Lessons").child("Semester1").child(self.navigationItem.title!).child("\(chapter2[indexPath.row].uid!)").updateChildValues(["chapter": "\(chapter2[indexPath.row].chapter!)", "number": "\(chapter2[indexPath.row].number!)", "title": answer!, "owner": uid!])
+                    self.fetchLessons()
+                }
+                
+                let cancelAction = UIAlertAction(title: "Huỷ", style: .cancel, handler: nil)
+                
+                alert.addAction(submitAction)
+                alert.addAction(cancelAction)
+                alert.preferredAction = submitAction
+                
+                present(alert, animated: true, completion: nil)
+                
+            default:
+                break
+            }
         }
         editAction.backgroundColor = .blue
         

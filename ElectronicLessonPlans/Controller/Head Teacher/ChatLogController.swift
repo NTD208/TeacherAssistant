@@ -80,8 +80,6 @@ class ChatLogController: UIViewController {
         
         setupLayout()
         
-//        self.tabBarController?.tabBar.isHidden = true
-        
         collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .white
@@ -96,7 +94,6 @@ class ChatLogController: UIViewController {
         uploadImage.isUserInteractionEnabled = true
         uploadImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadTap)))
         
-//        setupKeyboardObservers()
     }
     
     func setupLayout() {
@@ -263,10 +260,6 @@ class ChatLogController: UIViewController {
         super.viewDidDisappear(animated)
         
         NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
     }
 }
 

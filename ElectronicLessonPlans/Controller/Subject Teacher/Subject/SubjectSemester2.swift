@@ -31,7 +31,6 @@ class SubjectSemester2: UIViewController {
     var chaptersDictionary4 = [String: Lesson]()
     var max = Int.min
     var min = Int.max
-    var maxInSemester1:Int!
     
     var timer: Timer!
     
@@ -56,7 +55,6 @@ class SubjectSemester2: UIViewController {
         tabBarController?.tabBar.isHidden = false
         tabBarController?.tabBar.backgroundColor = .tabBarColor
         
-        navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

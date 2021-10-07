@@ -13,7 +13,8 @@ import ProgressHUD
 
 class PerInforViewController: UIViewController {
     
-    let database = Database.database().reference()
+    let uid = Auth.auth().currentUser?.uid
+    let database = Database.database().reference().child("Users")
     
     let containerView: UIView = {
         let view = UIView()
@@ -187,17 +188,6 @@ class PerInforViewController: UIViewController {
         return image
     }()
     
-    let saveButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor(red: 0.00, green: 0.48, blue: 1.00, alpha: 1.00)
-        button.setTitle("Lưu", for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        button.layer.cornerRadius = 15
-        return button
-    }()
-    
     let pickerLevel = ["Tiểu Học", "Trung Học Cơ Sở", "Trung Học Phổ Thông"]
     
     let pickerPrimaryNumber = ["_Chọn lớp_", "1", "2", "3", "4", "5"]
@@ -213,13 +203,13 @@ class PerInforViewController: UIViewController {
     let pickerSecondarySubject = ["Toán", "Ngữ Văn", "Vật lý ", "Hoá học", "Tiếng Anh", "Địa lý", "Lịch sử", "Công nghệ", "Âm nhạc & Mỹ thuật", "Giáo dục công dân", "Sinh học"]
     
     let pickerHighSchoolSubject = ["Đại số & Hình học", "Ngữ Văn", "Vật lí", "Hoá học", "Giáo dục quốc phòng", "Lịch sử", "Địa lí", "Giáo dục công dân", "Sinh học", "Giáo dục thể chất", "Tin học"]
+    
+    var subjects = [String]()
             
     var isEdit: Bool = false
     
     var timer:Timer!
-                
-    let uid = Auth.auth().currentUser?.uid
-        
+                        
     var levelLabelCenterYAnchor: NSLayoutConstraint?
     var classLabelCenterYAnchor: NSLayoutConstraint?
     var subjectLabelCenterYAnchor: NSLayoutConstraint?
@@ -236,16 +226,12 @@ class PerInforViewController: UIViewController {
         editButtonItem.style = .done
         editButtonItem.action = #selector(onPressEdit)
         
-        saveButton.isHidden = true
-        saveButton.addTarget(self, action: #selector(handleTapSave), for: .touchUpInside)
-        
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImage)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
-        navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Thông tin cá nhân"
         navigationController?.navigationBar.isTranslucent = false
         let appearance = UINavigationBarAppearance()
@@ -274,7 +260,6 @@ class PerInforViewController: UIViewController {
         containerView.addSubview(nameLabel)
         containerView.addSubview(dobLabel)
         containerView.addSubview(stackView)
-        containerView.addSubview(saveButton)
 
         stackView.addArrangedSubview(levelView)
         stackView.addArrangedSubview(classView)
@@ -308,11 +293,6 @@ class PerInforViewController: UIViewController {
         stackView.topAnchor.constraint(equalTo: dobLabel.bottomAnchor, constant: 50).isActive = true
         stackView.widthAnchor.constraint(equalTo: dobLabel.widthAnchor).isActive = true
         stackView.heightAnchor.constraint(equalToConstant: 220).isActive = true
-        
-        saveButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        saveButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 50).isActive = true
-        saveButton.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-        saveButton.heightAnchor.constraint(equalTo: subjectView.heightAnchor).isActive = true
 
         levelLabelCenterYAnchor = levelLabel.centerYAnchor.constraint(equalTo: levelView.centerYAnchor)
         levelLabelCenterYAnchor?.isActive = true
@@ -374,19 +354,20 @@ class PerInforViewController: UIViewController {
                         return
                     }
 
-                    storageRef.downloadURL { url, error in
+                    storageRef.downloadURL {[self] url, error in
                         if error != nil {
                             print(error!)
                             return
                         }
 
-                        guard let imageUrl = url?.absoluteString, let level = self.levelTextField.text, let nameClass = self.classTextField.text, let subject = self.subjectTextField.text else {
+                        guard let imageUrl = url?.absoluteString, let level = self.levelTextField.text, let nameClass = self.classTextField.text, let subject = subjectTextField.text else {
                             return
                         }
-
-                        let infor = ["profileImage":imageUrl, "level": level, "class":nameClass, "subject":subject]
+                        
+                        let infor = ["profileImage": imageUrl, "level": level, "class": nameClass, "subject": subject]
 
                         self.uploadInformationWithUID(uid: self.uid!, values: infor)
+                        
                     }
                 }
             }
@@ -413,31 +394,27 @@ class PerInforViewController: UIViewController {
             subjectTextField.isUserInteractionEnabled = false
         }
     }
-    
-    @objc func handleTapSave() {}
-    
+        
     private func uploadInformationWithUID(uid: String, values: [String: String]) {
-        database.child("Users").child(uid).updateChildValues(values)
+        database.child(uid).updateChildValues(values)
     }
     
     @objc func slideTitle() {
+        levelTextField.isUserInteractionEnabled = true
+        classTextField.isUserInteractionEnabled = true
+        subjectTextField.isUserInteractionEnabled = true
+        
         if levelTextField.text == "" {
             levelLabelCenterYAnchor?.constant = -(levelView.frame.height/2)
         }
-        
-        levelTextField.isUserInteractionEnabled = true
         
         if classTextField.text == "" {
             classLabelCenterYAnchor?.constant = -(classView.frame.height/2)
         }
         
-        classTextField.isUserInteractionEnabled = true
-        
         if subjectTextField.text == "" {
             subjectLabelCenterYAnchor?.constant = -(subjectView.frame.height/2)
         }
-        
-        subjectTextField.isUserInteractionEnabled = true
     }
     
     func createToolbar() -> UIToolbar {
@@ -466,8 +443,7 @@ class PerInforViewController: UIViewController {
     }
     
     private func checkUserAndFillInfor() {
-        let uid = Auth.auth().currentUser?.uid
-        database.child("Users").child(uid!).observeSingleEvent(of: .value, with: { snapshort in
+        database.child(uid!).observeSingleEvent(of: .value, with: { snapshort in
             if let dictionary = snapshort.value as? [String: Any] {
                 self.nameLabel.text = dictionary["name"] as? String
                 self.dobLabel.text = dictionary["dob"] as? String
@@ -498,7 +474,7 @@ class PerInforViewController: UIViewController {
                     self.classLabelCenterYAnchor?.constant = -(self.classView.frame.height/2)
                     self.classTextField.text = dictionary["class"] as? String
                 }
-
+                
                 if dictionary["subject"] as? String != nil && dictionary["subject"] as? String != "Không có" {
                     self.subjectLabelCenterYAnchor?.constant = -(self.subjectView.frame.height/2)
                     self.subjectTextField.text = dictionary["subject"] as? String

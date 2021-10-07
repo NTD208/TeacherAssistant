@@ -103,6 +103,7 @@ PODS:
   - ProgressHUD (13.6)
   - PromisesObjC (2.0.0)
   - SideMenu (6.5.0)
+  - TagListView (1.4.1)
 
 DEPENDENCIES:
   - Firebase/Auth
@@ -112,6 +113,7 @@ DEPENDENCIES:
   - IQKeyboardManagerSwift
   - ProgressHUD
   - SideMenu
+  - TagListView
 
 SPEC REPOS:
   trunk:
@@ -133,6 +135,7 @@ SPEC REPOS:
     - ProgressHUD
     - PromisesObjC
     - SideMenu
+    - TagListView
 
 SPEC CHECKSUMS:
   Firebase: ff8c73105b90e33e1dc6c8e5445d7adc2ccdc7c1
@@ -153,7 +156,8 @@ SPEC CHECKSUMS:
   ProgressHUD: 4bdaa0d2ddf676b23324b199f9facffb5c3a1620
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   SideMenu: f583187d21c5b1dd04c72002be544b555a2627a2
+  TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
 
-PODFILE CHECKSUM: 59f4d0c58af0fdb47afd29298aa7031fe10de595
+PODFILE CHECKSUM: 77e5be16f4e0e5c3f29a451b82f4f56364c6c03f
 
 COCOAPODS: 1.10.1
